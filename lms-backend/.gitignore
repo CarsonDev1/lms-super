@@ -1,0 +1,23 @@
+logs/
+node_modules/
+.env
+.env.production
+.env.local
+.DS_Store
+*.log
+dist/
+build/
+coverage/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+backups/
+mongo-data/
+
+# OS
+Thumbs.db
+Desktop.ini

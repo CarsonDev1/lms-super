@@ -1,0 +1,56 @@
+{
+	"name": "lms-backend",
+	"version": "1.0.0",
+	"description": "Professional LMS Backend with Express.js, MongoDB, JWT, and Swagger",
+	"main": "src/server.js",
+	"type": "module",
+	"scripts": {
+		"start": "node src/server.js",
+		"dev": "nodemon src/server.js",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"express",
+		"mongodb",
+		"jwt",
+		"swagger",
+		"es6",
+		"lms"
+	],
+	"author": "CarsonDev1",
+	"license": "ISC",
+	"dependencies": {
+		"axios": "^1.6.0",
+		"bcrypt": "^5.1.1",
+		"cloudinary": "^1.41.3",
+		"compression": "^1.7.4",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.5",
+		"dotenv": "^16.4.5",
+		"express": "^4.19.2",
+		"express-async-errors": "^3.1.1",
+		"express-rate-limit": "^7.2.0",
+		"express-validator": "^7.0.1",
+		"helmet": "^7.1.0",
+		"jsonwebtoken": "^9.0.2",
+		"mongoose": "^8.3.2",
+		"morgan": "^1.10.0",
+		"multer": "^1.4.5-lts.1",
+		"nodemailer": "^6.9.0",
+		"passport": "^0.7.0",
+		"passport-facebook": "^3.0.0",
+		"passport-google-oauth20": "^2.0.0",
+		"pdfkit": "^0.14.0",
+		"qrcode": "^1.5.3",
+		"socket.io": "^4.6.0",
+		"swagger-jsdoc": "^6.2.8",
+		"swagger-ui-express": "^5.0.0",
+		"winston": "^3.13.0"
+	},
+	"devDependencies": {
+		"eslint": "^8.57.0",
+		"nodemon": "^3.1.0"
+	}
+}

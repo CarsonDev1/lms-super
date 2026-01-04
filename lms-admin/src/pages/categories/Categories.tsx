@@ -1,0 +1,180 @@
+import './Categories.scss';
+import { useRef } from 'react';
+import { categoriesApi, Category } from '@/api/categories';
+import { useFetch } from '@/hooks/useFetch';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Space, Tag, Form, Input, message } from 'antd';
+import PageHeader from '@/components/page-header/PageHeader';
+import DataTable from '@/components/datatable/DataTable';
+import FormModal from '@/components/modal/FormModal';
+import { useFormModal } from '@/components/modal';
+
+const Categories = () => {
+	const { data, pagination, loading, error, refetch } = useFetch<Category>('categories', () =>
+		categoriesApi.getCategories()
+	);
+
+	const [state, actions] = useFormModal();
+	const [form] = Form.useForm();
+	const formInitialValues = useRef<Record<string, any>>({});
+
+	if (error) return <div>Error: {error.message}</div>;
+
+	const handleAddClick = () => {
+		form.resetFields();
+		formInitialValues.current = {};
+		actions.openModal();
+	};
+
+	const handleEditClick = (record: Category) => {
+		const initialValues = {
+			name: record.name,
+			description: record.description,
+		};
+		formInitialValues.current = initialValues;
+		form.setFieldsValue(initialValues);
+		actions.openModal({ ...record });
+		actions.setDirty(false);
+	};
+
+	const handleFormChange = () => {
+		const currentValues = form.getFieldsValue();
+		const isDirty = JSON.stringify(currentValues) !== JSON.stringify(formInitialValues.current);
+		actions.setDirty(isDirty);
+	};
+
+	const handleSubmit = async () => {
+		try {
+			const values = await form.validateFields();
+			actions.setLoading(true);
+
+			if (state.data?._id) {
+				await categoriesApi.updateCategory(state.data._id, values);
+				message.success('Category updated successfully');
+			} else {
+				await categoriesApi.createCategory(values);
+				message.success('Category created successfully');
+			}
+
+			refetch();
+			actions.closeModal();
+		} catch (error: any) {
+			message.error(error?.message || 'Failed to save category');
+		} finally {
+			actions.setLoading(false);
+		}
+	};
+
+	const columns = [
+		{
+			title: 'Name',
+			dataIndex: 'name',
+			key: 'name',
+			width: 200,
+			fixed: 'left' as const,
+			render: (text: string) => <strong>{text}</strong>,
+		},
+		{
+			title: 'Description',
+			dataIndex: 'description',
+			key: 'description',
+			ellipsis: true,
+		},
+		{
+			title: 'Status',
+			dataIndex: 'isActive',
+			key: 'isActive',
+			width: 100,
+			render: (isActive: boolean) => (
+				<Tag color={isActive ? 'green' : 'red'}>{isActive ? 'Active' : 'Inactive'}</Tag>
+			),
+		},
+		{
+			title: 'Created At',
+			dataIndex: 'createdAt',
+			key: 'createdAt',
+			width: 180,
+			render: (date: string) => new Date(date).toLocaleDateString('vi-VN'),
+		},
+		{
+			title: 'Actions',
+			key: 'actions',
+			width: 150,
+			fixed: 'right' as const,
+			render: (_: any, record: Category) => (
+				<Space>
+					<Button type='text' icon={<EditOutlined />} size='small' onClick={() => handleEditClick(record)} />
+					<Button type='text' danger icon={<DeleteOutlined />} size='small' />
+				</Space>
+			),
+		},
+	];
+
+	const pageActions = (
+		<div className='actions'>
+			<Button onClick={() => refetch()}>Refresh</Button>
+			<Button icon={<PlusOutlined />} type='primary' onClick={handleAddClick}>
+				Add Category
+			</Button>
+		</div>
+	);
+
+	return (
+		<div className='categories-page'>
+			<PageHeader title='Categories' total={pagination?.total} actions={pageActions} />
+			<DataTable
+				columns={columns}
+				dataSource={data || []}
+				loading={loading}
+				rowKey='_id'
+				pagination={{
+					current: pagination?.page || 1,
+					pageSize: pagination?.limit || 10,
+					total: pagination?.total || 0,
+				}}
+			/>
+
+			<FormModal
+				isOpen={state.isOpen}
+				title={state.data?._id ? 'Edit Category' : 'Add Category'}
+				isDirty={state.isDirty}
+				onClose={actions.closeModal}
+				onSubmit={handleSubmit}
+				loading={state.loading}
+				okText={state.data?._id ? 'Update' : 'Create'}
+			>
+				<Form
+					form={form}
+					layout='vertical'
+					onValuesChange={handleFormChange}
+					initialValues={{
+						name: '',
+						description: '',
+						isActive: true,
+					}}
+				>
+					<Form.Item
+						name='name'
+						label='Category Name'
+						rules={[
+							{ required: true, message: 'Please enter category name' },
+							{ min: 3, message: 'Name must be at least 3 characters' },
+						]}
+					>
+						<Input placeholder='Enter category name' />
+					</Form.Item>
+
+					<Form.Item
+						name='description'
+						label='Description'
+						rules={[{ required: true, message: 'Please enter description' }]}
+					>
+						<Input.TextArea placeholder='Enter category description' rows={4} />
+					</Form.Item>
+				</Form>
+			</FormModal>
+		</div>
+	);
+};
+
+export default Categories;

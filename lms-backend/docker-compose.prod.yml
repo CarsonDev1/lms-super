@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+    # MongoDB Service - Production
+    mongodb:
+        image: mongo:7.0
+        container_name: lms-mongodb-prod
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+            MONGO_INITDB_DATABASE: lms-database
+        ports:
+            - '27017:27017'
+        volumes:
+            - mongodb_data:/data/db
+            - mongodb_config:/data/configdb
+            - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+        networks:
+            - lms-network
+        healthcheck:
+            test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 40s
+
+    # Backend Service - Production
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: production
+        container_name: lms-backend-prod
+        restart: always
+        ports:
+            - '${PORT:-5000}:5000'
+        environment:
+            NODE_ENV: production
+            PORT: 5000
+            MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD}@mongodb:27017/lms-database?authSource=admin
+            JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+            JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+            JWT_ACCESS_EXPIRE: ${JWT_ACCESS_EXPIRE:-15m}
+            JWT_REFRESH_EXPIRE: ${JWT_REFRESH_EXPIRE:-7d}
+            JWT_ISSUER: ${JWT_ISSUER:-lms-backend}
+            JWT_AUDIENCE: ${JWT_AUDIENCE:-lms-client}
+            CORS_ORIGIN: ${CORS_ORIGIN:-*}
+            LOG_LEVEL: ${LOG_LEVEL:-info}
+            API_URL: ${API_URL}
+        volumes:
+            - ./logs:/app/logs
+        depends_on:
+            mongodb:
+                condition: service_healthy
+        networks:
+            - lms-network
+        healthcheck:
+            test:
+                [
+                    'CMD',
+                    'node',
+                    '-e',
+                    "require('http').get('http://localhost:5000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+
+    # Nginx Reverse Proxy (optional)
+    nginx:
+        image: nginx:alpine
+        container_name: lms-nginx
+        restart: always
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./nginx/ssl:/etc/nginx/ssl:ro
+        depends_on:
+            - backend
+        networks:
+            - lms-network
+
+volumes:
+    mongodb_data:
+        driver: local
+    mongodb_config:
+        driver: local
+
+networks:
+    lms-network:
+        driver: bridge

@@ -1,0 +1,77 @@
+.form-modal {
+	.ant-modal-header {
+		border-bottom: 1px solid #f0f0f0;
+	}
+
+	.ant-modal-title {
+		font-size: 18px;
+		font-weight: 600;
+		color: #262626;
+	}
+
+	.ant-modal-body {
+		max-height: calc(100vh - 200px);
+		overflow-y: auto;
+
+		&::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: #f5f5f5;
+			border-radius: 3px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: #bfbfbf;
+			border-radius: 3px;
+
+			&:hover {
+				background: #8c8c8c;
+			}
+		}
+	}
+
+	.ant-modal-footer {
+		text-align: right;
+		background: transparent;
+
+		.ant-btn {
+			min-width: 80px;
+			margin-left: 8px;
+
+			&:first-child {
+				margin-left: 0;
+			}
+
+			&:hover:not(:disabled) {
+				transform: translateY(-1px);
+			}
+		}
+
+		.ant-btn-primary {
+			&:hover:not(:disabled) {
+				box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+			}
+		}
+	}
+}
+
+.form-modal-footer {
+	gap: 8px;
+
+	.ant-btn {
+		min-width: 80px;
+
+		&:focus {
+			box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+		}
+	}
+
+	.ant-btn-primary {
+		&:hover:not(:disabled) {
+			transform: translateY(-1px);
+			box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+		}
+	}
+}
