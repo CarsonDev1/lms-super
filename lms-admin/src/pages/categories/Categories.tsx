@@ -29,7 +29,6 @@ const Categories = () => {
 	const handleEditClick = (record: Category) => {
 		const initialValues = {
 			name: record.name,
-			description: record.description,
 		};
 		formInitialValues.current = initialValues;
 		form.setFieldsValue(initialValues);
@@ -71,14 +70,7 @@ const Categories = () => {
 			dataIndex: 'name',
 			key: 'name',
 			width: 200,
-			fixed: 'left' as const,
 			render: (text: string) => <strong>{text}</strong>,
-		},
-		{
-			title: 'Description',
-			dataIndex: 'description',
-			key: 'description',
-			ellipsis: true,
 		},
 		{
 			title: 'Status',
@@ -100,7 +92,6 @@ const Categories = () => {
 			title: 'Actions',
 			key: 'actions',
 			width: 150,
-			fixed: 'right' as const,
 			render: (_: any, record: Category) => (
 				<Space>
 					<Button type='text' icon={<EditOutlined />} size='small' onClick={() => handleEditClick(record)} />
@@ -149,7 +140,6 @@ const Categories = () => {
 					onValuesChange={handleFormChange}
 					initialValues={{
 						name: '',
-						description: '',
 						isActive: true,
 					}}
 				>
@@ -162,14 +152,6 @@ const Categories = () => {
 						]}
 					>
 						<Input placeholder='Enter category name' />
-					</Form.Item>
-
-					<Form.Item
-						name='description'
-						label='Description'
-						rules={[{ required: true, message: 'Please enter description' }]}
-					>
-						<Input.TextArea placeholder='Enter category description' rows={4} />
 					</Form.Item>
 				</Form>
 			</FormModal>

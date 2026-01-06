@@ -52,8 +52,7 @@ function SideBar({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
 					<img src={Logo} alt='LMS Logo' className='img-logo' />
 				</div>
 				<Menu
-					theme='dark'
-					mode='inline'
+					className='sidebar-menu'
 					selectedKeys={[location.pathname]}
 					items={menuItems}
 					onClick={handleMenuClick}

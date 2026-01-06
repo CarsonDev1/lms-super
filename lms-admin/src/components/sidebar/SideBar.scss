@@ -3,8 +3,10 @@
 	flex-direction: column;
 	justify-content: space-between;
 	height: 100%;
+	background: $primary-color;
 }
 .sidebar {
+	background: $primary-color;
 	.sidebar-logo {
 		width: 70px;
 		height: 70px;
@@ -15,11 +17,36 @@
 		height: 100%;
 		object-fit: cover;
 	}
+	.sidebar-menu {
+		flex: 1;
+		background: $primary-color;
+		border-right: none;
+
+		.ant-menu-item,
+		.ant-menu-submenu-title {
+			color: $bg-primary;
+
+			&:hover {
+				background: $bg-primary;
+			}
+		}
+		.ant-menu-item {
+			transition: all 0.3s ease-in-out;
+			&:hover {
+				color: $primary-color !important;
+				background: $bg-primary !important;
+			}
+		}
+
+		.ant-menu-item-selected {
+			background: $bg-primary;
+			color: $primary-color;
+		}
+	}
 	.menu-profile {
 		position: absolute;
 		bottom: 0;
 		width: 100%;
 		padding: 16px;
-		background-color: #001529;
 	}
 }
