@@ -6,7 +6,6 @@ import compression from 'compression';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
-import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
 import swaggerSpec from './config/swagger.js';
@@ -31,9 +30,15 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
-
-// Load environment variables
-dotenv.config();
+import studyPlanRoutes from './routes/studyPlanRoutes.js';
+import gamificationRoutes from './routes/gamificationRoutes.js';
+import roadmapRoutes from './routes/roadmapRoutes.js';
+import cmsRoutes from './routes/cmsRoutes.js';
+import announcementRoutes from './routes/announcementRoutes.js';
+import courseApprovalRoutes from './routes/courseApprovalRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import chatbotRoutes from './routes/chatbotRoutes.js';
+import auditLogRoutes from './routes/auditLogRoutes.js';
 
 // Create Express app
 const app = express();
@@ -46,9 +51,11 @@ app.set('trust proxy', 1);
 
 // Security middlewares
 app.use(helmet());
+
+// CORS allow all origins (reflects request origin, supports credentials)
 app.use(
 	cors({
-		origin: process.env.CORS_ORIGIN || '*',
+		origin: true,
 		credentials: true,
 	})
 );
@@ -135,6 +142,15 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/study-plans', studyPlanRoutes);
+app.use('/api/gamification', gamificationRoutes);
+app.use('/api/roadmap', roadmapRoutes);
+app.use('/api/cms', cmsRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/course-approvals', courseApprovalRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/audit-logs', auditLogRoutes);
 
 // 404 handler
 app.use(notFound);

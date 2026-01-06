@@ -40,9 +40,9 @@ export const register = async ({ email, password, name, phone, bio }) => {
 /**
  * Login user
  */
-export const login = async ({ email, password, userAgent, ipAddress }) => {
+export const login = async ({ email, password, userAgent, ipAddress, skipPasswordCheck = false }) => {
 	// Find user
-	const user = await User.findOne({ email }).select('+password');
+	const user = await User.findOne({ email }).select(skipPasswordCheck ? '' : '+password');
 	if (!user) {
 		throw new Error('Invalid email or password');
 	}
@@ -52,10 +52,12 @@ export const login = async ({ email, password, userAgent, ipAddress }) => {
 		throw new Error(`Account has been blocked. Reason: ${user.blockReason || 'Contact administrator'}`);
 	}
 
-	// Verify password
-	const isPasswordValid = await bcrypt.compare(password, user.password);
-	if (!isPasswordValid) {
-		throw new Error('Invalid email or password');
+	// Verify password when required
+	if (!skipPasswordCheck) {
+		const isPasswordValid = await bcrypt.compare(password, user.password);
+		if (!isPasswordValid) {
+			throw new Error('Invalid email or password');
+		}
 	}
 
 	// Generate access token (JWT)

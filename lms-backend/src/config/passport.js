@@ -4,9 +4,16 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import User from '../models/User.js';
 import logger from './logger.js';
 
+console.log('=== PASSPORT CONFIG ===');
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'EXISTS' : 'MISSING');
+console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'EXISTS' : 'MISSING');
+console.log('=======================');
+
 // Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+	logger.info('Configuring Google OAuth Strategy');
 	passport.use(
+		'google',
 		new GoogleStrategy(
 			{
 				clientID: process.env.GOOGLE_CLIENT_ID,
@@ -60,11 +67,15 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 			}
 		)
 	);
+} else {
+	logger.warn('Google OAuth not configured. Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET');
 }
 
 // Facebook OAuth Strategy
 if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+	logger.info('Configuring Facebook OAuth Strategy');
 	passport.use(
+		'facebook',
 		new FacebookStrategy(
 			{
 				clientID: process.env.FACEBOOK_APP_ID,
@@ -118,7 +129,12 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
 			}
 		)
 	);
+} else {
+	logger.warn('Facebook OAuth not configured. Missing FACEBOOK_APP_ID or FACEBOOK_APP_SECRET');
 }
+
+// Log registered strategies to aid debugging
+logger.info(`Passport strategies loaded: ${Object.keys(passport._strategies).join(', ') || 'none'}`);
 
 // Serialize user
 passport.serializeUser((user, done) => {

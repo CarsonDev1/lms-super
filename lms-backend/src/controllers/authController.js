@@ -391,11 +391,13 @@ export const googleCallback = async (req, res) => {
 		});
 
 		// Redirect to frontend with access token
-		const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?accessToken=${accessToken}`;
+		const frontend = process.env.FRONTEND_URL || 'http://localhost:3000';
+		const redirectUrl = `${frontend}/auth/callback?accessToken=${accessToken}`;
 		res.redirect(redirectUrl);
 	} catch (error) {
 		logger.error('Google callback error:', error);
-		res.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`);
+		const frontend = process.env.FRONTEND_URL || 'http://localhost:3000';
+		res.redirect(`${frontend}/login?error=oauth_failed`);
 	}
 };
 
@@ -443,11 +445,13 @@ export const facebookCallback = async (req, res) => {
 		});
 
 		// Redirect to frontend with access token
-		const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?accessToken=${accessToken}`;
+		const frontend = process.env.FRONTEND_URL || 'http://localhost:3000';
+		const redirectUrl = `${frontend}/auth/callback?accessToken=${accessToken}`;
 		res.redirect(redirectUrl);
 	} catch (error) {
 		logger.error('Facebook callback error:', error);
-		res.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`);
+		const frontend = process.env.FRONTEND_URL || 'http://localhost:3000';
+		res.redirect(`${frontend}/login?error=oauth_failed`);
 	}
 };
 

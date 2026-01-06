@@ -4,9 +4,22 @@ const options = {
 	definition: {
 		openapi: '3.0.0',
 		info: {
-			title: 'LMS Backend API',
-			version: '1.0.0',
-			description: 'Professional Learning Management System API with JWT Authentication',
+			title: 'LMS Backend API - Complete',
+			version: '2.0.0',
+			description: `
+# Professional Learning Management System API
+
+Complete LMS platform with:
+- 🎓 Course Management & Approval Workflow
+- 📚 Study Plans & Adaptive Learning  
+- 🎮 Gamification (XP, Achievements, Streaks)
+- 🗺️ Learning Roadmap & Levels
+- 📊 Analytics & Dashboards
+- 🤖 AI Chatbot
+- 📢 CMS & Announcements
+- 🔐 JWT Authentication
+- 📝 Audit Logs
+			`,
 			contact: {
 				name: 'CarsonDev1',
 				email: 'support@lms.com',
@@ -20,6 +33,18 @@ const options = {
 				url: process.env.API_URL || 'http://localhost:5000',
 				description: 'Development server',
 			},
+		],
+		tags: [
+			{ name: 'Courses', description: 'Course management' },
+			{ name: 'Study Plans', description: 'Personalized study planning' },
+			{ name: 'Roadmap', description: 'Learning roadmap & levels' },
+			{ name: 'Gamification', description: 'XP, achievements, leaderboards' },
+			{ name: 'Course Approvals', description: 'Course approval workflow' },
+			{ name: 'CMS', description: 'Content management' },
+			{ name: 'Announcements', description: 'Platform announcements' },
+			{ name: 'Chatbot', description: 'AI chatbot support' },
+			{ name: 'Analytics', description: 'Statistics & dashboards' },
+			{ name: 'Audit Logs', description: 'Activity logging' },
 		],
 		components: {
 			securitySchemes: {
@@ -67,7 +92,7 @@ const options = {
 						},
 						role: {
 							type: 'string',
-							enum: ['student', 'instructor', 'admin'],
+							enum: ['student', 'instructor', 'admin', 'reviewer'],
 							example: 'student',
 						},
 						isEmailVerified: {
@@ -82,6 +107,41 @@ const options = {
 							type: 'string',
 							format: 'date-time',
 						},
+					},
+				},
+				StudyPlan: {
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						userId: { type: 'string' },
+						courseId: { type: 'string' },
+						title: { type: 'string' },
+						dailyStudyMinutes: { type: 'number' },
+						sessions: { type: 'array', items: { type: 'object' } },
+						status: { type: 'string', enum: ['active', 'paused', 'completed'] },
+					},
+				},
+				Achievement: {
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						code: { type: 'string' },
+						name: { type: 'string' },
+						description: { type: 'string' },
+						type: { type: 'string' },
+						xpReward: { type: 'number' },
+						cupsReward: { type: 'number' },
+					},
+				},
+				UserProgress: {
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						userId: { type: 'string' },
+						level: { type: 'number' },
+						xp: { type: 'number' },
+						cups: { type: 'number' },
+						currentStreak: { type: 'number' },
 					},
 				},
 			},
