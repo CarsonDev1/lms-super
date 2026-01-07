@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { categoriesApi, Category } from '@/api/categories';
 import { useFetch } from '@/hooks/useFetch';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Space, Tag, Form, Input, message } from 'antd';
+import { Button, Space, Form, Input, message, Popconfirm } from 'antd';
 import PageHeader from '@/components/page-header/PageHeader';
 import DataTable from '@/components/datatable/DataTable';
 import FormModal from '@/components/modal/FormModal';
@@ -34,6 +34,19 @@ const Categories = () => {
 		form.setFieldsValue(initialValues);
 		actions.openModal({ ...record });
 		actions.setDirty(false);
+	};
+
+	const handleDelete = async (record: Category) => {
+		try {
+			actions.setLoading(true);
+			await categoriesApi.deleteCategory(record._id);
+			message.success('Category deleted successfully');
+			refetch();
+		} catch (error: any) {
+			message.error(error?.message || 'Failed to delete category');
+		} finally {
+			actions.setLoading(false);
+		}
 	};
 
 	const handleFormChange = () => {
@@ -73,15 +86,6 @@ const Categories = () => {
 			render: (text: string) => <strong>{text}</strong>,
 		},
 		{
-			title: 'Status',
-			dataIndex: 'isActive',
-			key: 'isActive',
-			width: 100,
-			render: (isActive: boolean) => (
-				<Tag color={isActive ? 'green' : 'red'}>{isActive ? 'Active' : 'Inactive'}</Tag>
-			),
-		},
-		{
 			title: 'Created At',
 			dataIndex: 'createdAt',
 			key: 'createdAt',
@@ -95,7 +99,16 @@ const Categories = () => {
 			render: (_: any, record: Category) => (
 				<Space>
 					<Button type='text' icon={<EditOutlined />} size='small' onClick={() => handleEditClick(record)} />
-					<Button type='text' danger icon={<DeleteOutlined />} size='small' />
+					<Popconfirm
+						title='Delete Category'
+						description='Are you sure you want to delete this category?'
+						onConfirm={() => handleDelete(record)}
+						okText='Yes'
+						cancelText='No'
+						okButtonProps={{ danger: true }}
+					>
+						<Button type='text' danger icon={<DeleteOutlined />} size='small' />
+					</Popconfirm>
 				</Space>
 			),
 		},
@@ -104,7 +117,7 @@ const Categories = () => {
 	const pageActions = (
 		<div className='actions'>
 			<Button onClick={() => refetch()}>Refresh</Button>
-			<Button icon={<PlusOutlined />} type='primary' onClick={handleAddClick}>
+			<Button icon={<PlusOutlined />} type='primary' className='btn-primary' onClick={handleAddClick}>
 				Add Category
 			</Button>
 		</div>

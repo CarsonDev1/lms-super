@@ -20,27 +20,27 @@ function SideBar({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
 	const menuItems: MenuItem[] = [
 		{
 			key: '/',
-			icon: <DashboardOutlined />,
+			icon: <DashboardOutlined style={{ fontSize: '18px' }} />,
 			label: 'Dashboard',
 		},
 		{
 			key: '/courses',
-			icon: <BookOutlined />,
+			icon: <BookOutlined style={{ fontSize: '18px' }} />,
 			label: 'Courses',
 		},
 		{
 			key: '/categories',
-			icon: <MedicineBoxOutlined />,
+			icon: <MedicineBoxOutlined style={{ fontSize: '18px' }} />,
 			label: 'Categories',
 		},
 		{
 			key: '/users',
-			icon: <UserOutlined />,
+			icon: <UserOutlined style={{ fontSize: '18px' }} />,
 			label: 'Users',
 		},
 		{
 			key: '/settings',
-			icon: <SettingOutlined />,
+			icon: <SettingOutlined style={{ fontSize: '18px' }} />,
 			label: 'Settings',
 		},
 	];
@@ -48,7 +48,7 @@ function SideBar({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
 	return (
 		<Sider collapsible collapsed={sidebarCollapsed} theme='dark' trigger={null} width={250}>
 			<div className='sidebar'>
-				<div className='sidebar-logo'>
+				<div className={`${sidebarCollapsed ? 'sidebar-logo-collapsed' : 'sidebar-logo'}`}>
 					<img src={Logo} alt='LMS Logo' className='img-logo' />
 				</div>
 				<Menu
