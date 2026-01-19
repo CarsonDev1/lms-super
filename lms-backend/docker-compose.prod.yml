@@ -47,7 +47,7 @@ services:
             JWT_AUDIENCE: ${JWT_AUDIENCE:-lms-client}
             CORS_ORIGIN: ${CORS_ORIGIN:-*}
             LOG_LEVEL: ${LOG_LEVEL:-info}
-            API_URL: ${API_URL}
+            API_URL: http://backendlearning.xyz
         volumes:
             - ./logs:/app/logs
         depends_on:

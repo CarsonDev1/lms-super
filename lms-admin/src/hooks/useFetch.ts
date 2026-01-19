@@ -26,7 +26,8 @@ interface FetchResult<T> {
 export const useFetch = <T = any>(
 	key: string,
 	fetchFn: () => Promise<any>,
-	options?: FetchOptions<T[]>
+	options?: FetchOptions<T[]>,
+	deps: any[] = [], // Add dependencies array
 ): FetchResult<T[]> => {
 	const { data, loading, error, setData, setLoading, setError, getCache, setPagination, getPagination } = useQuery();
 	const hasRunRef = useRef(false);
@@ -84,22 +85,21 @@ export const useFetch = <T = any>(
 		// Bỏ qua nếu skip = true
 		if (options?.skip) return;
 
+		// Reset hasRunRef when deps change (to allow refetch on dependency changes)
+		hasRunRef.current = false;
+
 		// Nếu đã có cache và không force refetch, dùng cache
-		if (cachedData !== undefined && !options?.refetch && !hasRunRef.current) {
+		if (cachedData !== undefined && !options?.refetch) {
 			setData(key, cachedData);
 			if (cachedPagination) {
 				setPagination(key, cachedPagination);
 			}
-			return;
+			// But still perform fetch to update data
 		}
-
-		// Tránh fetch lặp lại khi StrictMode
-		if (hasRunRef.current && !options?.refetch) return;
-		hasRunRef.current = true;
 
 		performFetch();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [key, options?.refetch]);
+	}, [key, options?.refetch, ...deps]); // Add deps to dependency array
 
 	const refetch = useCallback(() => {
 		hasRunRef.current = false;

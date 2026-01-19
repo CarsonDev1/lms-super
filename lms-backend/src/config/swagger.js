@@ -30,8 +30,12 @@ Complete LMS platform with:
 		},
 		servers: [
 			{
-				url: process.env.API_URL || 'http://localhost:5000',
-				description: 'Development server',
+				url: process.env.API_URL || 'http://backendlearning.xyz',
+				description: 'Production server',
+			},
+			{
+				url: 'http://localhost:5000',
+				description: 'Local development',
 			},
 		],
 		tags: [

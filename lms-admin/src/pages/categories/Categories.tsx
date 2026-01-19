@@ -1,5 +1,5 @@
 import './Categories.scss';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { categoriesApi, Category } from '@/api/categories';
 import { useFetch } from '@/hooks/useFetch';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -10,13 +10,29 @@ import FormModal from '@/components/modal/FormModal';
 import { useFormModal } from '@/components/modal';
 
 const Categories = () => {
-	const { data, pagination, loading, error, refetch } = useFetch<Category>('categories', () =>
-		categoriesApi.getCategories()
+	const [page, setPage] = useState(1);
+	const [pageSize, setPageSize] = useState(10);
+
+	const { data, pagination, loading, error, refetch } = useFetch<Category>(
+		'categories',
+		() => categoriesApi.getCategories({ page, limit: pageSize }),
+		undefined,
+		[page, pageSize], // Pass deps to trigger refetch when page/pageSize changes
 	);
 
 	const [state, actions] = useFormModal();
 	const [form] = Form.useForm();
 	const formInitialValues = useRef<Record<string, any>>({});
+
+	const handleTableChange = (paginationConfig: any) => {
+		if (paginationConfig.current !== page) {
+			setPage(paginationConfig.current);
+		}
+		if (paginationConfig.pageSize !== pageSize) {
+			setPageSize(paginationConfig.pageSize);
+			setPage(1);
+		}
+	};
 
 	if (error) return <div>Error: {error.message}</div>;
 
@@ -126,16 +142,18 @@ const Categories = () => {
 	return (
 		<div className='categories-page'>
 			<PageHeader title='Categories' total={pagination?.total} actions={pageActions} />
+
 			<DataTable
 				columns={columns}
 				dataSource={data || []}
 				loading={loading}
 				rowKey='_id'
 				pagination={{
-					current: pagination?.page || 1,
-					pageSize: pagination?.limit || 10,
+					current: page,
+					pageSize: pageSize,
 					total: pagination?.total || 0,
 				}}
+				onChange={handleTableChange}
 			/>
 
 			<FormModal

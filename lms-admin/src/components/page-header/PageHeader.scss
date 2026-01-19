@@ -24,10 +24,61 @@
 	.actions {
 		display: flex;
 		gap: 8px;
+		flex-wrap: wrap;
 
 		button {
 			&:hover {
 				transition: all 0.2s ease;
+			}
+		}
+	}
+
+	// Tablet
+	@media (max-width: 768px) {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+
+		h1 {
+			font-size: 20px;
+
+			.total {
+				font-size: 14px;
+			}
+		}
+
+		.actions {
+			width: 100%;
+			justify-content: flex-start;
+
+			button {
+				flex: 0 0 auto;
+			}
+		}
+	}
+
+	// Mobile
+	@media (max-width: 480px) {
+		margin-bottom: 16px;
+		padding-bottom: 12px;
+
+		h1 {
+			font-size: 18px;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
+
+			.total {
+				font-size: 13px;
+			}
+		}
+
+		.actions {
+			gap: 6px;
+
+			button {
+				font-size: 13px;
+				padding: 4px 12px;
 			}
 		}
 	}

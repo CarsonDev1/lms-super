@@ -49,8 +49,13 @@ connectDB();
 // Trust proxy - important for rate limiting behind reverse proxy
 app.set('trust proxy', 1);
 
-// Security middlewares
-app.use(helmet());
+// Security middlewares - disable HSTS for HTTP
+app.use(
+	helmet({
+		hsts: false, // Disable HSTS to allow HTTP
+		contentSecurityPolicy: false, // Disable CSP for Swagger
+	})
+);
 
 // CORS allow all origins (reflects request origin, supports credentials)
 app.use(
@@ -98,14 +103,28 @@ if (process.env.NODE_ENV === 'development') {
 
 // API Documentation
 app.use(
-	'/api-docs',
+	'/api-docs/',
 	swaggerUi.serve,
 	swaggerUi.setup(swaggerSpec, {
 		explorer: true,
 		customCss: '.swagger-ui .topbar { display: none }',
 		customSiteTitle: 'LMS API Documentation',
+		swaggerOptions: {
+			url: '/api-docs/swagger.json',
+		},
 	})
 );
+
+// Serve swagger spec as JSON
+app.get('/api-docs/swagger.json', (req, res) => {
+	res.setHeader('Content-Type', 'application/json');
+	res.send(swaggerSpec);
+});
+
+// Redirect /api-docs to /api-docs/
+app.get('/api-docs', (req, res) => {
+	res.redirect('/api-docs/');
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {

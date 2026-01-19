@@ -9,7 +9,7 @@ export interface Category {
 }
 
 export const categoriesApi = {
-	getCategories: () => apiClient.get<Category[]>('/categories'),
+	getCategories: (params?: { page?: number; limit?: number }) => apiClient.get<Category[]>('/categories', { params }),
 	getCategoryById: (id: string) => apiClient.get<Category>(`/categories/${id}`),
 	createCategory: (data: { name: string; description?: string }) => apiClient.post('/categories', data),
 	updateCategory: (id: string, data: { name?: string; description?: string }) =>

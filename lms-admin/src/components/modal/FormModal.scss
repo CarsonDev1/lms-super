@@ -43,10 +43,6 @@
 			&:first-child {
 				margin-left: 0;
 			}
-
-			&:hover:not(:disabled) {
-				transform: translateY(-1px);
-			}
 		}
 
 		.ant-btn-primary {
@@ -70,7 +66,6 @@
 
 	.ant-btn-primary {
 		&:hover:not(:disabled) {
-			transform: translateY(-1px);
 			box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
 		}
 	}
