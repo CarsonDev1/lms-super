@@ -1,5 +1,6 @@
 import Categories from '@/pages/categories/Categories';
 import Home from '@/pages/home/Home';
+import Users from '@/pages/users/Users';
 import { ReactNode } from 'react';
 
 interface AppRoute {
@@ -26,7 +27,7 @@ export const dashboardRoutes: AppRoute[] = [
 	},
 	{
 		path: '/users',
-		element: <div>Users Page</div>,
+		element: <Users />,
 		name: 'Users',
 	},
 	{

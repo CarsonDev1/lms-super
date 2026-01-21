@@ -17,7 +17,7 @@ const Categories = () => {
 		'categories',
 		() => categoriesApi.getCategories({ page, limit: pageSize }),
 		undefined,
-		[page, pageSize], // Pass deps to trigger refetch when page/pageSize changes
+		[page, pageSize],
 	);
 
 	const [state, actions] = useFormModal();
@@ -94,6 +94,13 @@ const Categories = () => {
 	};
 
 	const columns = [
+		{
+			title: 'Index',
+			dataIndex: 'index',
+			key: 'index',
+			width: 20,
+			render: (_: any, __: any, index: number) => (page - 1) * pageSize + index + 1,
+		},
 		{
 			title: 'Name',
 			dataIndex: 'name',
