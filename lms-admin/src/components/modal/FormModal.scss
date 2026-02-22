@@ -1,6 +1,10 @@
 .form-modal {
+	.ant-modal-content {
+		padding: 0px !important;
+	}
 	.ant-modal-header {
 		border-bottom: 1px solid #f0f0f0;
+		padding: 16px;
 	}
 
 	.ant-modal-title {
@@ -12,6 +16,7 @@
 	.ant-modal-body {
 		max-height: calc(100vh - 200px);
 		overflow-y: auto;
+		padding: 16px;
 
 		&::-webkit-scrollbar {
 			width: 6px;
@@ -35,6 +40,7 @@
 	.ant-modal-footer {
 		text-align: right;
 		background: transparent;
+		padding: 16px;
 
 		.ant-btn {
 			min-width: 80px;

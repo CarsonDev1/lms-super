@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useQuery, type Pagination } from '@/stores/queryStore';
 
 interface FetchOptions<T = any> {
@@ -113,5 +113,38 @@ export const useFetch = <T = any>(
 		loading: loading[key] || false,
 		error: error[key],
 		refetch,
+	};
+};
+
+/**
+ * Wrapper for useFetch that handles pagination state internally
+ */
+export const usePaginatedFetch = <T = any>(
+	key: string,
+	fetchFn: (params: { page: number; limit: number }) => Promise<any>,
+	options?: FetchOptions<T[]>,
+	initialPage: number = 1,
+	initialPageSize: number = 10,
+) => {
+	const [page, setPage] = useState(initialPage);
+	const [pageSize, setPageSize] = useState(initialPageSize);
+
+	const { data, pagination, loading, error, refetch } = useFetch<T>(
+		key,
+		() => fetchFn({ page, limit: pageSize }),
+		options,
+		[page, pageSize],
+	);
+
+	return {
+		data,
+		pagination,
+		loading,
+		error,
+		refetch,
+		page,
+		setPage,
+		pageSize,
+		setPageSize,
 	};
 };
