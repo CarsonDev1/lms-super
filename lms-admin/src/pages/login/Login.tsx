@@ -9,6 +9,7 @@ import './Login.scss';
 
 function Login() {
 	const [loading, setLoading] = useState(false);
+	const [form] = Form.useForm();
 	const navigate = useNavigate();
 	const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -32,6 +33,7 @@ function Login() {
 				<img src={Logo} alt='LMS Admin Logo' className='login-logo' />
 				<h2 className='login-title'>Welcome to LMS Admin</h2>
 				<Form
+					form={form}
 					name='login'
 					onFinish={onFinish}
 					autoComplete='off'
@@ -45,11 +47,21 @@ function Login() {
 							{ type: 'email', message: 'Please enter a valid email!' },
 						]}
 					>
-						<Input prefix={<UserOutlined />} placeholder='Email' size='large' />
+						<Input
+							prefix={<UserOutlined />}
+							placeholder='Email'
+							size='large'
+							onPressEnter={() => form.submit()}
+						/>
 					</Form.Item>
 
 					<Form.Item name='password' rules={[{ required: true, message: 'Please input your password!' }]}>
-						<Input.Password prefix={<LockOutlined />} placeholder='Password' size='large' />
+						<Input.Password
+							prefix={<LockOutlined />}
+							placeholder='Password'
+							size='large'
+							onPressEnter={() => form.submit()}
+						/>
 					</Form.Item>
 
 					<Form.Item>

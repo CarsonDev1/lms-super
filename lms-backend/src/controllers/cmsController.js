@@ -11,7 +11,7 @@ export const getPages = async (req, res) => {
 	const filter = {};
 	if (type) filter.type = type;
 	if (status) filter.status = status;
-	else filter.status = 'published'; // Default to published only
+	// NOTE: No default status filter — admin needs to see all pages including drafts
 
 	const pages = await CMSPage.find(filter).populate('author', 'name avatar').sort('-createdAt');
 
@@ -104,7 +104,7 @@ export const updatePage = async (req, res) => {
 		{
 			new: true,
 			runValidators: true,
-		}
+		},
 	);
 
 	res.json({

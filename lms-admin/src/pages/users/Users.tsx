@@ -8,10 +8,13 @@ import {
 	CloseCircleOutlined,
 	DeleteOutlined,
 	EditOutlined,
+	KeyOutlined,
+	LockOutlined,
 	PlusOutlined,
+	UnlockOutlined,
 	UserOutlined,
 } from '@ant-design/icons';
-import { Button, Popconfirm, Space, message } from 'antd';
+import { Button, Form, Input, Modal, Popconfirm, Space, Tooltip, message } from 'antd';
 import { TableColumnType } from 'antd';
 import { useState } from 'react';
 
@@ -41,6 +44,47 @@ const Users = () => {
 		} catch (error) {
 			console.error(error);
 			message.error('Failed to delete user');
+		}
+	};
+
+	const handleBlockUser = async (user: User) => {
+		try {
+			await usersApi.blockUser(user._id, {
+				isBlocked: !user.isBlocked,
+				reason: user.isBlocked ? undefined : 'Blocked by admin',
+			});
+			message.success(user.isBlocked ? 'User unblocked' : 'User blocked');
+			refetch();
+		} catch (error) {
+			console.error(error);
+			message.error('Failed to update user block status');
+		}
+	};
+
+	const [resetPasswordModal, setResetPasswordModal] = useState<{ open: boolean; user: User | null }>({
+		open: false,
+		user: null,
+	});
+	const [resetLoading, setResetLoading] = useState(false);
+	const [resetForm] = Form.useForm();
+
+	const handleOpenResetPassword = (user: User) => {
+		resetForm.resetFields();
+		setResetPasswordModal({ open: true, user });
+	};
+
+	const handleResetPassword = async () => {
+		try {
+			const values = await resetForm.validateFields();
+			setResetLoading(true);
+			await usersApi.resetPassword(resetPasswordModal.user!._id, { newPassword: values.newPassword });
+			message.success('Password reset successfully');
+			setResetPasswordModal({ open: false, user: null });
+		} catch (error: any) {
+			console.error(error);
+			message.error(error?.message || 'Failed to reset password');
+		} finally {
+			setResetLoading(false);
 		}
 	};
 
@@ -145,10 +189,43 @@ const Users = () => {
 			title: 'Actions',
 			key: 'actions',
 			align: 'center' as const,
+			fixed: 'right',
 			width: 150,
 			render: (user: User) => (
-				<Space>
-					<Button type='text' icon={<EditOutlined />} size='small' onClick={() => handleEditUser(user)} />
+				<Space onClick={(e) => e.stopPropagation()}>
+					<Tooltip title='Edit'>
+						<Button type='text' icon={<EditOutlined />} size='small' onClick={() => handleEditUser(user)} />
+					</Tooltip>
+					<Tooltip title={user.isBlocked ? 'Unblock' : 'Block'}>
+						<Popconfirm
+							title={user.isBlocked ? 'Unblock this user?' : 'Block this user?'}
+							description={user.isBlocked ? 'User will regain access.' : 'User will lose access.'}
+							onConfirm={() => handleBlockUser(user)}
+							okText='Yes'
+							cancelText='No'
+							okButtonProps={{ danger: !user.isBlocked }}
+						>
+							<Button
+								type='text'
+								size='small'
+								icon={
+									user.isBlocked ? (
+										<UnlockOutlined style={{ color: '#52c41a' }} />
+									) : (
+										<LockOutlined style={{ color: '#fa8c16' }} />
+									)
+								}
+							/>
+						</Popconfirm>
+					</Tooltip>
+					<Tooltip title='Reset Password'>
+						<Button
+							type='text'
+							size='small'
+							icon={<KeyOutlined style={{ color: '#722ed1' }} />}
+							onClick={() => handleOpenResetPassword(user)}
+						/>
+					</Tooltip>
 					<Popconfirm
 						title='Delete User'
 						description='Are you sure you want to delete this user?'
@@ -192,6 +269,10 @@ const Users = () => {
 					setPage(p.current || 1);
 					setPageSize(p.pageSize || 10);
 				}}
+				onRow={(record) => ({
+					onClick: () => handleEditUser(record),
+					style: { cursor: 'pointer' },
+				})}
 			/>
 
 			<UserModal
@@ -200,6 +281,34 @@ const Users = () => {
 				selectedUser={selectedUser}
 				onSuccess={refetch}
 			/>
+
+			{/* Reset Password Modal */}
+			<Modal
+				open={resetPasswordModal.open}
+				title={`🔑 Reset Password — ${resetPasswordModal.user?.name}`}
+				onCancel={() => setResetPasswordModal({ open: false, user: null })}
+				onOk={handleResetPassword}
+				confirmLoading={resetLoading}
+				okText='Reset Password'
+				okButtonProps={{ danger: true }}
+				style={{ top: 20 }}
+			>
+				<p style={{ color: '#6b7280', marginBottom: 16 }}>
+					Set a new password for <strong>{resetPasswordModal.user?.email}</strong>
+				</p>
+				<Form form={resetForm} layout='vertical'>
+					<Form.Item
+						name='newPassword'
+						label='New Password'
+						rules={[
+							{ required: true, message: 'Please enter new password' },
+							{ min: 6, message: 'Password must be at least 6 characters' },
+						]}
+					>
+						<Input.Password placeholder='Enter new password' />
+					</Form.Item>
+				</Form>
+			</Modal>
 		</div>
 	);
 };

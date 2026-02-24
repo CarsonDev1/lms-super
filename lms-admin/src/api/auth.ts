@@ -1,4 +1,4 @@
-import apiClient from './client';
+import { post, get } from './client';
 
 export interface User {
 	_id: string;
@@ -20,8 +20,8 @@ export interface LoginResponse {
 }
 
 export const authApi = {
-	login: (data: LoginRequest) => apiClient.post<LoginResponse>('/auth/login', data),
-	refreshToken: (data: { refreshToken: string }) => apiClient.post<{ refreshToken: string }>('/auth/refresh', data),
-	logout: () => apiClient.post('/auth/logout'),
-	getProfile: () => apiClient.get<User>('/auth/profile'),
+	login: (data: LoginRequest) => post<LoginResponse>('/auth/login', data),
+	refreshToken: () => post<{ data: { accessToken: string } }>('/auth/refresh'),
+	logout: () => post('/auth/logout'),
+	getProfile: () => get<User>('/auth/profile'),
 };

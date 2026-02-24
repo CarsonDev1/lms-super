@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
 		},
 		role: {
 			type: String,
-			enum: ['student', 'instructor', 'admin', 'reviewer', 'guest'],
+			enum: ['student', 'instructor', 'admin', 'reviewer', 'guest', 'user'],
 			default: 'student',
 		},
 		permissions: {
@@ -114,7 +114,7 @@ const userSchema = new mongoose.Schema(
 		toObject: {
 			virtuals: true,
 		},
-	}
+	},
 );
 
 // Index for better query performance

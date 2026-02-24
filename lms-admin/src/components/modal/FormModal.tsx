@@ -56,6 +56,7 @@ function FormModal({
 	return (
 		<Modal
 			{...modalProps}
+			style={{ top: 20, ...modalProps.style }}
 			title={title}
 			open={isOpen}
 			onCancel={handleCancel}

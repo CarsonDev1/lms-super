@@ -16,9 +16,11 @@ interface EditModalProps {
 const EditModal = ({ open, onCancel, selectedUser, onSuccess }: EditModalProps) => {
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState(false);
+	const [isDirty, setIsDirty] = useState(false);
 
 	useEffect(() => {
 		if (open) {
+			setIsDirty(false);
 			if (selectedUser) {
 				form.setFieldsValue({
 					name: selectedUser.name,
@@ -31,7 +33,7 @@ const EditModal = ({ open, onCancel, selectedUser, onSuccess }: EditModalProps) 
 				// Default values for create
 				form.setFieldsValue({
 					isActive: true,
-					role: 'user',
+					role: 'student',
 				});
 			}
 		}
@@ -77,6 +79,7 @@ const EditModal = ({ open, onCancel, selectedUser, onSuccess }: EditModalProps) 
 			const response = info.file.response;
 			if (response && response.url) {
 				form.setFieldsValue({ avatar: response.url });
+				setIsDirty(true);
 				message.success('Avatar uploaded successfully');
 			} else {
 				message.error('Failed to upload avatar');
@@ -97,9 +100,9 @@ const EditModal = ({ open, onCancel, selectedUser, onSuccess }: EditModalProps) 
 			title={selectedUser ? 'Edit User' : 'Add User'}
 			onSubmit={handleSubmit}
 			loading={loading}
-			isDirty={form.isFieldsTouched()}
+			isDirty={isDirty}
 		>
-			<Form form={form} layout='vertical'>
+			<Form form={form} layout='vertical' onValuesChange={() => setIsDirty(true)}>
 				<Form.Item name='avatar' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 					<Upload
 						style={{ borderRadius: '50%' }}
@@ -141,17 +144,8 @@ const EditModal = ({ open, onCancel, selectedUser, onSuccess }: EditModalProps) 
 					</Upload>
 				</Form.Item>
 				<Form.Item name='name' label='Name' rules={[{ required: true, message: 'Please enter name' }]}>
-					<Input />
+					<Input placeholder='Full name' />
 				</Form.Item>
-				{!selectedUser && (
-					<Form.Item
-						name='password'
-						label='Password'
-						rules={[{ required: selectedUser ? false : true, message: 'Please enter password' }]}
-					>
-						<Input.Password />
-					</Form.Item>
-				)}
 				<Form.Item
 					name='email'
 					label='Email'
@@ -160,12 +154,28 @@ const EditModal = ({ open, onCancel, selectedUser, onSuccess }: EditModalProps) 
 						{ type: 'email', message: 'Invalid email' },
 					]}
 				>
-					<Input />
+					<Input placeholder='user@example.com' />
 				</Form.Item>
+				{!selectedUser && (
+					<Form.Item
+						name='password'
+						label='Password'
+						rules={[
+							{ required: true, message: 'Please enter password' },
+							{ min: 6, message: 'Password must be at least 6 characters' },
+						]}
+					>
+						<Input.Password placeholder='Minimum 6 characters' />
+					</Form.Item>
+				)}
 				<Form.Item name='role' label='Role' rules={[{ required: true, message: 'Please select role' }]}>
 					<Select>
-						<Select.Option value='user'>User</Select.Option>
+						<Select.Option value='student'>Student</Select.Option>
+						<Select.Option value='instructor'>Instructor</Select.Option>
 						<Select.Option value='admin'>Admin</Select.Option>
+						<Select.Option value='reviewer'>Reviewer</Select.Option>
+						<Select.Option value='guest'>Guest</Select.Option>
+						<Select.Option value='user'>User</Select.Option>
 					</Select>
 				</Form.Item>
 				<Form.Item name='isActive' label='Active' valuePropName='checked'>

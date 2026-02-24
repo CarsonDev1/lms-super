@@ -228,9 +228,9 @@ export const getUserDetail = async (req, res) => {
 
 		// Get user statistics
 		const enrollments = await Enrollment.countDocuments({ userId });
-		const completedCourses = await Enrollment.countDocuments({ 
-			userId, 
-			status: 'completed' 
+		const completedCourses = await Enrollment.countDocuments({
+			userId,
+			status: 'completed',
 		});
 		const orders = await Order.countDocuments({ userId });
 		const totalSpent = await Order.aggregate([
@@ -242,9 +242,9 @@ export const getUserDetail = async (req, res) => {
 		let instructorStats = null;
 		if (user.role === 'instructor') {
 			const courses = await Course.countDocuments({ instructor: userId });
-			const publishedCourses = await Course.countDocuments({ 
-				instructor: userId, 
-				status: 'published' 
+			const publishedCourses = await Course.countDocuments({
+				instructor: userId,
+				status: 'published',
 			});
 			const totalStudents = await Course.aggregate([
 				{ $match: { instructor: user._id } },
@@ -328,7 +328,7 @@ export const getUserDetail = async (req, res) => {
  */
 export const createUser = async (req, res) => {
 	try {
-		const { name, email, password, role, phone, bio, avatar } = req.body;
+		const { name, email, password, role, phone, bio, avatar, isActive } = req.body;
 
 		// Check if user exists
 		const existingUser = await User.findOne({ email });
@@ -351,6 +351,7 @@ export const createUser = async (req, res) => {
 			phone,
 			bio,
 			avatar,
+			isActive: typeof isActive === 'boolean' ? isActive : true,
 			isEmailVerified: true, // Admin-created users are auto-verified
 		});
 
@@ -371,12 +372,16 @@ export const createUser = async (req, res) => {
 				name: user.name,
 				email: user.email,
 				role: user.role,
+				avatar: user.avatar,
+				isActive: user.isActive,
 			},
 		});
 	} catch (error) {
+		console.error('Admin createUser error:', error);
 		res.status(500).json({
 			success: false,
 			message: 'Failed to create user',
+			error: error?.message || error,
 		});
 	}
 };
@@ -600,9 +605,8 @@ export const resetUserPassword = async (req, res) => {
 		// Generate random password if not provided
 		const passwordToSet = newPassword || crypto.randomBytes(8).toString('hex');
 
-		// Hash password
-		const hashedPassword = await bcrypt.hash(passwordToSet, 10);
-		user.password = hashedPassword;
+		// Assign plain password — the pre-save hook on User model will hash it
+		user.password = passwordToSet;
 		await user.save();
 
 		// Send email with new password

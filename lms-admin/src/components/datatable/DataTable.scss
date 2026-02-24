@@ -1,8 +1,10 @@
 .data-table-wrapper {
 	position: relative;
-	border-radius: 8px;
-	border: 1px solid $border-table;
+	border-radius: 12px;
+	border: 1px solid rgba($border-table, 0.4);
 	background: #fff;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+	overflow: hidden;
 
 	table,
 	th,
@@ -10,7 +12,7 @@
 	thead,
 	tbody,
 	tr {
-		border-color: $border-table !important;
+		border-color: rgba($border-table, 0.6) !important;
 		background: #fff;
 
 		&:last-child {
@@ -22,35 +24,37 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 16px 24px;
+		padding: 20px 24px;
 		flex-wrap: wrap;
 		gap: 12px;
+		border-bottom: 1px solid rgba($border-table, 0.4);
 
 		.data-table-title {
 			margin: 0;
-			font-size: 16px;
-			font-weight: 600;
-			color: #262626;
+			font-size: 18px;
+			font-weight: 700;
+			color: #1f2937;
+			letter-spacing: -0.01em;
 		}
 
 		.data-table-actions {
 			display: flex;
-			gap: 8px;
+			gap: 12px;
 			flex-wrap: wrap;
 		}
 
 		@media (max-width: 768px) {
-			padding: 12px 16px;
+			padding: 16px;
 
 			.data-table-title {
-				font-size: 14px;
+				font-size: 16px;
 			}
 		}
 
 		@media (max-width: 480px) {
 			flex-direction: column;
 			align-items: flex-start;
-			padding: 12px;
+			padding: 16px;
 
 			.data-table-actions {
 				width: 100%;
@@ -64,16 +68,27 @@
 		}
 
 		.ant-table-thead > tr > th {
-			font-weight: bold;
-			color: $primary-color;
-			background: $header-table-bg !important;
+			font-weight: 600;
+			color: darken($primary-color, 15%);
+			background: mix($header-table-bg, #ffffff, 40%) !important;
+			padding: 16px 24px;
+			text-transform: uppercase;
+			font-size: 12px;
+			letter-spacing: 0.05em;
+			white-space: nowrap;
+		}
+
+		.ant-table-tbody > tr > td {
+			padding: 16px 24px;
+			color: #4b5563;
+			background: #ffffff;
 		}
 
 		.ant-table-tbody > tr {
-			transition: all 0.2s ease;
+			transition: all 0.25s ease;
 
-			&:hover {
-				background: #fafafa;
+			&:hover > td {
+				background: mix($primary-color, #fff, 3%) !important;
 			}
 		}
 
@@ -101,14 +116,15 @@
 		.ant-pagination {
 			display: flex;
 			align-items: center;
-			justify-content: center;
-			padding: 16px 24px;
-			margin: 0 auto;
-			border-radius: 8px;
+			justify-content: flex-end;
+			padding: 20px 24px;
+			margin: 0;
+			border-top: 1px solid rgba($border-table, 0.4);
 			flex-wrap: wrap;
 
 			@media (max-width: 768px) {
-				padding: 12px 16px;
+				padding: 16px;
+				justify-content: center;
 				gap: 8px;
 			}
 

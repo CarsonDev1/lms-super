@@ -9,6 +9,8 @@ export interface User {
 	updatedAt: string;
 	avatar?: string;
 	isActive?: boolean;
+	isBlocked?: boolean;
+	blockReason?: string;
 }
 
 export const usersApi = {
@@ -17,4 +19,8 @@ export const usersApi = {
 	updateUser: (id: string, data: Partial<User>) => apiClient.put<User>(`/admin/users/${id}`, data),
 	createUser: (data: Partial<User>) => apiClient.post<User>('/admin/users', data),
 	deleteUser: (id: string) => apiClient.delete(`/admin/users/${id}`),
+	blockUser: (id: string, data: { isBlocked: boolean; reason?: string }) =>
+		apiClient.put(`/admin/users/${id}/block`, data),
+	resetPassword: (id: string, data: { newPassword: string }) =>
+		apiClient.post(`/admin/users/${id}/reset-password`, data),
 };

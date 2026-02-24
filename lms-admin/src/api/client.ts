@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { message } from 'antd';
+import { useAuthStore } from '@/stores/authStore';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -41,7 +42,7 @@ apiClient.interceptors.request.use(
 	},
 	(error: AxiosError) => {
 		return Promise.reject(error);
-	}
+	},
 );
 
 // Response interceptor
@@ -77,11 +78,16 @@ apiClient.interceptors.response.use(
 
 			try {
 				// Gọi refresh token (cookie tự động gửi)
-				// Response interceptor đã unwrap data rồi, nên không cần .data
-				const { accessToken } = (await apiClient.post('/auth/refresh')) as { accessToken: string };
+				const refreshRes = (await apiClient.post('/auth/refresh')) as { data: { accessToken: string } };
+				const accessToken = refreshRes.data?.accessToken;
 
-				// Lưu access token mới
+				if (!accessToken) {
+					throw new Error('Refresh failed: No access token in response');
+				}
+
+				// Lưu access token mới vào cả localStorage và authStore
 				localStorage.setItem('token', accessToken);
+				useAuthStore.setState((state) => ({ ...state, token: accessToken }));
 
 				// Cập nhật token cho request đang chờ
 				processQueue(null, accessToken);
@@ -90,9 +96,10 @@ apiClient.interceptors.response.use(
 				originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 				return apiClient(originalRequest);
 			} catch (refreshError) {
-				// Refresh thất bại, xóa token và redirect
+				// Refresh thất bại, xóa token và logout
 				processQueue(refreshError, null);
 				localStorage.removeItem('token');
+				useAuthStore.setState({ user: null, token: null, isAuthenticated: false });
 
 				// Chỉ redirect nếu chưa ở trang login
 				if (!isLoginPage) {
@@ -115,7 +122,7 @@ apiClient.interceptors.response.use(
 		}
 
 		return Promise.reject(error.response?.data || error.message);
-	}
+	},
 );
 
 // Export helper functions

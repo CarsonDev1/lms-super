@@ -133,7 +133,15 @@ export const getLevelById = async (req, res) => {
 export const createLevel = async (req, res) => {
 	try {
 		const { name, description, order } = req.body;
-		const level = await Level.create({ name, description, order });
+
+		// Auto-assign order if not provided: max(existing order) + 1
+		let finalOrder = order;
+		if (finalOrder === undefined || finalOrder === null) {
+			const lastLevel = await Level.findOne().sort({ order: -1 }).select('order');
+			finalOrder = lastLevel ? lastLevel.order + 1 : 1;
+		}
+
+		const level = await Level.create({ name, description, order: finalOrder });
 		res.status(201).json({
 			success: true,
 			message: 'Level created successfully',
