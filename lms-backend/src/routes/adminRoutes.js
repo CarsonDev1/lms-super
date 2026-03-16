@@ -11,6 +11,10 @@ import {
 	getUserStatistics,
 	getRevenueReport,
 	getPendingCourses,
+	getAllOrders,
+	getAllEnrollments,
+	getAllReviews,
+	deleteAdminReview,
 } from '../controllers/adminController.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
 
@@ -38,5 +42,15 @@ router.get('/revenue', getRevenueReport);
 
 // Course Management
 router.get('/courses/pending', getPendingCourses);
+
+// Orders Management
+router.get('/orders', getAllOrders);
+
+// Enrollments Management
+router.get('/enrollments', getAllEnrollments);
+
+// Reviews Management
+router.get('/reviews', getAllReviews);
+router.delete('/reviews/:reviewId', deleteAdminReview);
 
 export default router;

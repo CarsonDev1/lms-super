@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"/d/Carson Upgrade/LMS/lms-backend/\" | grep -E \"\\\\.\\(json|yml|yaml|md|env|rc\\)$\")"
+    ]
+  }
+}

@@ -11,7 +11,10 @@ import {
 	NotificationOutlined,
 	OrderedListOutlined,
 	QuestionCircleOutlined,
+	ShoppingOutlined,
+	StarOutlined,
 	TagsOutlined,
+	TeamOutlined,
 	TrophyOutlined,
 	UserOutlined,
 } from '@ant-design/icons';
@@ -33,98 +36,80 @@ function SideBar({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
 		navigate(e.key);
 	};
 
+	const mk = (key: string, label: string, icon: React.ReactNode): MenuItem => ({ key, icon, label });
+
 	const adminMenu: MenuItem[] = [
+		mk('/', 'Dashboard', <DashboardOutlined />),
+		{ type: 'divider' as const },
 		{
-			key: '/',
-			icon: <DashboardOutlined style={{ fontSize: '18px' }} />,
-			label: 'Dashboard',
+			key: 'grp-content',
+			type: 'group' as const,
+			label: sidebarCollapsed ? '' : 'Content',
+			children: [
+				mk('/courses', 'Course Approvals', <BookOutlined />),
+				mk('/categories', 'Categories', <MedicineBoxOutlined />),
+				mk('/levels', 'Levels', <OrderedListOutlined />),
+			],
 		},
 		{
-			key: '/courses',
-			icon: <BookOutlined style={{ fontSize: '18px' }} />,
-			label: 'Course Approvals',
+			key: 'grp-commerce',
+			type: 'group' as const,
+			label: sidebarCollapsed ? '' : 'Commerce',
+			children: [
+				mk('/users', 'Users', <UserOutlined />),
+				mk('/orders', 'Orders', <ShoppingOutlined />),
+				mk('/enrollments', 'Enrollments', <TeamOutlined />),
+				mk('/reviews', 'Reviews', <StarOutlined />),
+				mk('/coupons', 'Coupons', <TagsOutlined />),
+			],
 		},
 		{
-			key: '/categories',
-			icon: <MedicineBoxOutlined style={{ fontSize: '18px' }} />,
-			label: 'Categories',
+			key: 'grp-platform',
+			type: 'group' as const,
+			label: sidebarCollapsed ? '' : 'Platform',
+			children: [
+				mk('/announcements', 'Announcements', <NotificationOutlined />),
+				mk('/cms', 'CMS Pages', <FileTextOutlined />),
+				mk('/achievements', 'Achievements', <TrophyOutlined />),
+			],
 		},
 		{
-			key: '/levels',
-			icon: <OrderedListOutlined style={{ fontSize: '18px' }} />,
-			label: 'Levels',
-		},
-		{
-			key: '/users',
-			icon: <UserOutlined style={{ fontSize: '18px' }} />,
-			label: 'Users',
-		},
-		{
-			key: '/coupons',
-			icon: <TagsOutlined style={{ fontSize: '18px' }} />,
-			label: 'Coupons',
-		},
-		{
-			key: '/announcements',
-			icon: <NotificationOutlined style={{ fontSize: '18px' }} />,
-			label: 'Announcements',
-		},
-		{
-			key: '/cms',
-			icon: <FileTextOutlined style={{ fontSize: '18px' }} />,
-			label: 'CMS Pages',
-		},
-		{
-			key: '/achievements',
-			icon: <TrophyOutlined style={{ fontSize: '18px' }} />,
-			label: 'Achievements',
-		},
-		{
-			key: '/revenue',
-			icon: <BarChartOutlined style={{ fontSize: '18px' }} />,
-			label: 'Revenue',
-		},
-		{
-			key: '/audit-logs',
-			icon: <AuditOutlined style={{ fontSize: '18px' }} />,
-			label: 'Audit Logs',
+			key: 'grp-reports',
+			type: 'group' as const,
+			label: sidebarCollapsed ? '' : 'Reports',
+			children: [
+				mk('/revenue', 'Revenue', <BarChartOutlined />),
+				mk('/audit-logs', 'Audit Logs', <AuditOutlined />),
+			],
 		},
 	];
 
 	const instructorMenu: MenuItem[] = [
+		mk('/instructor', 'Dashboard', <DashboardOutlined />),
+		{ type: 'divider' as const },
 		{
-			key: '/instructor',
-			icon: <DashboardOutlined style={{ fontSize: '18px' }} />,
-			label: 'Dashboard',
+			key: 'grp-teaching',
+			type: 'group' as const,
+			label: sidebarCollapsed ? '' : 'Teaching',
+			children: [
+				mk('/instructor/courses', 'My Courses', <BookOutlined />),
+				mk('/instructor/quizzes', 'My Quizzes', <QuestionCircleOutlined />),
+			],
 		},
 		{
-			key: '/instructor/courses',
-			icon: <BookOutlined style={{ fontSize: '18px' }} />,
-			label: 'My Courses',
-		},
-		{
-			key: '/instructor/quizzes',
-			icon: <QuestionCircleOutlined style={{ fontSize: '18px' }} />,
-			label: 'My Quizzes',
-		},
-		{
-			key: '/instructor/submissions',
-			icon: <FileSearchOutlined style={{ fontSize: '18px' }} />,
-			label: 'My Submissions',
+			key: 'grp-review',
+			type: 'group' as const,
+			label: sidebarCollapsed ? '' : 'Review',
+			children: [
+				mk('/instructor/submissions', 'My Submissions', <FileSearchOutlined />),
+			],
 		},
 	];
 
 	const reviewerMenu: MenuItem[] = [
-		{
-			key: '/',
-			icon: <DashboardOutlined style={{ fontSize: '18px' }} />,
-			label: 'Dashboard',
-		},
-		{
-			key: '/courses',
-			icon: <BookOutlined style={{ fontSize: '18px' }} />,
-			label: 'Course Approvals',
-		},
+		mk('/', 'Dashboard', <DashboardOutlined />),
+		{ type: 'divider' as const },
+		mk('/courses', 'Course Approvals', <BookOutlined />),
 	];
 
 	const menuItems =

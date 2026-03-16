@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Row, Col, Card, Statistic, Typography, Spin, Alert, Tag, Table } from 'antd';
-import { BookOutlined, DollarOutlined, UserOutlined, StarOutlined, RiseOutlined } from '@ant-design/icons';
+import {
+	Row, Col, Card, Statistic, Typography, Spin, Alert, Tag, Table, Progress, Space,
+} from 'antd';
+import {
+	BookOutlined, DollarOutlined, UserOutlined, StarOutlined,
+	RiseOutlined, CheckCircleOutlined, ClockCircleOutlined,
+} from '@ant-design/icons';
 import { instructorApi } from '@/api/instructor';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 function InstructorHome() {
 	const [dashboard, setDashboard] = useState<any>(null);
@@ -25,98 +30,107 @@ function InstructorHome() {
 		fetchDashboard();
 	}, []);
 
-	const resData = dashboard?.data || dashboard || {};
+	const d = dashboard?.data || dashboard || {};
 
 	const stats = [
 		{
 			title: 'My Courses',
-			value: resData?.courses?.total ?? 0,
+			value: d?.courses?.total ?? 0,
 			icon: <BookOutlined />,
 			color: '#1890ff',
-			bg: '#e6f7ff',
-			suffix: (
-				<div style={{ fontSize: 12, marginTop: 4, display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
-					<Tag color='success'>Published: {resData?.courses?.published ?? 0}</Tag>
-					<Tag color='warning'>Pending: {resData?.courses?.pending ?? 0}</Tag>
-					<Tag color='default'>Draft: {resData?.courses?.draft ?? 0}</Tag>
-				</div>
+			bg: '#e6f4ff',
+			sub: (
+				<Space wrap style={{ marginTop: 6 }}>
+					<Tag color='success'>Published: {d?.courses?.published ?? 0}</Tag>
+					<Tag color='warning'>Pending: {d?.courses?.pending ?? 0}</Tag>
+					<Tag color='default'>Draft: {d?.courses?.draft ?? 0}</Tag>
+				</Space>
 			),
 		},
 		{
 			title: 'Total Students',
-			value: resData?.enrollments?.total ?? 0,
+			value: d?.enrollments?.total ?? 0,
 			icon: <UserOutlined />,
 			color: '#52c41a',
 			bg: '#f6ffed',
-			suffix: (
-				<div style={{ fontSize: 12, marginTop: 4 }}>
-					<Tag color='blue'>This month: +{resData?.enrollments?.thisMonth ?? 0}</Tag>
-				</div>
+			sub: (
+				<Tag color='blue' style={{ marginTop: 6 }}>
+					Active: {d?.enrollments?.active ?? 0}
+				</Tag>
 			),
 		},
 		{
 			title: 'Total Revenue',
-			value: resData?.revenue?.total ?? 0,
+			value: d?.revenue?.totalRevenue ?? 0,
 			icon: <DollarOutlined />,
 			color: '#fa8c16',
 			bg: '#fff7e6',
-			prefix: '$',
-			precision: 2,
-			suffix: (
-				<div style={{ fontSize: 12, marginTop: 4 }}>
-					<Tag color='green' icon={<RiseOutlined />}>
-						This month: ${resData?.revenue?.thisMonth ?? 0}
-					</Tag>
-				</div>
+			sub: (
+				<Tag color='green' icon={<RiseOutlined />} style={{ marginTop: 6 }}>
+					{d?.revenue?.totalOrders ?? 0} orders
+				</Tag>
 			),
 		},
 		{
 			title: 'Average Rating',
-			value: resData?.ratings?.average ?? 0,
+			value: Number((d?.reviews?.averageRating ?? 0).toFixed(1)),
 			icon: <StarOutlined />,
 			color: '#faad14',
 			bg: '#fffbe6',
 			precision: 1,
-			suffix: (
-				<div style={{ fontSize: 12, marginTop: 4 }}>
-					<Tag>{resData?.ratings?.total ?? 0} reviews</Tag>
-				</div>
+			sub: (
+				<Tag style={{ marginTop: 6 }}>{d?.reviews?.totalReviews ?? 0} reviews</Tag>
 			),
 		},
 	];
 
-	const topCourseColumns = [
+	// Course performance columns
+	const performanceCols = [
 		{
 			title: 'Course',
-			dataIndex: 'title',
-			key: 'title',
-			render: (text: string) => <strong>{text}</strong>,
+			key: 'course',
+			render: (_: any, r: any) => (
+				<Space>
+					{r.thumbnail && (
+						<img src={r.thumbnail} style={{ width: 36, height: 26, objectFit: 'cover', borderRadius: 4 }} alt='' />
+					)}
+					<Text style={{ fontSize: 13, fontWeight: 600 }}>{r.title}</Text>
+				</Space>
+			),
 		},
 		{
 			title: 'Students',
-			dataIndex: 'totalStudents',
+			dataIndex: 'enrollmentCount',
 			key: 'students',
 			align: 'center' as const,
+			width: 90,
+			render: (v: number) => <Tag color='blue'>{v ?? 0}</Tag>,
 		},
 		{
 			title: 'Rating',
-			dataIndex: ['ratings', 'average'],
 			key: 'rating',
 			align: 'center' as const,
-			render: (v: number) => (v ? `⭐ ${v.toFixed(1)}` : '—'),
+			width: 100,
+			render: (_: any, r: any) =>
+				r.averageRating > 0 ? (
+					<Tag color='gold'>⭐ {Number(r.averageRating).toFixed(1)}</Tag>
+				) : (
+					<Text type='secondary'>—</Text>
+				),
 		},
 		{
-			title: 'Revenue',
-			dataIndex: 'revenue',
-			key: 'revenue',
-			align: 'right' as const,
-			render: (v: number) => `$${(v || 0).toLocaleString()}`,
+			title: 'Reviews',
+			dataIndex: 'totalReviews',
+			key: 'reviews',
+			align: 'center' as const,
+			width: 80,
+			render: (v: number) => v ?? 0,
 		},
 	];
 
 	return (
 		<div>
-			<Title level={2} style={{ marginBottom: 24 }}>
+			<Title level={2} style={{ marginBottom: 24, fontWeight: 700 }}>
 				Instructor Dashboard
 			</Title>
 
@@ -128,60 +142,26 @@ function InstructorHome() {
 				</div>
 			) : (
 				<>
-					<Row gutter={[24, 24]}>
-						{stats.map((stat) => (
-							<Col xs={24} sm={12} xl={6} key={stat.title}>
+					{/* ── Stat Cards ── */}
+					<Row gutter={[20, 20]}>
+						{stats.map((s) => (
+							<Col xs={24} sm={12} xl={6} key={s.title}>
 								<Card
-									style={{
-										borderRadius: 12,
-										border: 'none',
-										boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-										height: '100%',
-									}}
+									style={{ borderRadius: 16, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', height: '100%' }}
 									styles={{ body: { padding: '20px 24px' } }}
 								>
-									<div
-										style={{
-											display: 'flex',
-											alignItems: 'flex-start',
-											justifyContent: 'space-between',
-											gap: 12,
-										}}
-									>
+									<div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
 										<div style={{ flex: 1, minWidth: 0 }}>
-											<p
-												style={{
-													color: '#6b7280',
-													fontSize: 13,
-													marginBottom: 6,
-													fontWeight: 500,
-												}}
-											>
-												{stat.title}
-											</p>
+											<p style={{ color: '#6b7280', fontSize: 13, marginBottom: 6, fontWeight: 500 }}>{s.title}</p>
 											<Statistic
-												value={stat.value}
-												prefix={stat.prefix}
-												precision={stat.precision}
-												valueStyle={{ color: stat.color, fontSize: 26, fontWeight: 700 }}
+												value={s.value}
+												precision={s.precision ?? 0}
+												valueStyle={{ color: s.color, fontSize: 26, fontWeight: 700 }}
 											/>
-											{stat.suffix}
+											{s.sub}
 										</div>
-										<div
-											style={{
-												width: 48,
-												height: 48,
-												borderRadius: 12,
-												background: stat.bg,
-												display: 'flex',
-												alignItems: 'center',
-												justifyContent: 'center',
-												fontSize: 20,
-												color: stat.color,
-												flexShrink: 0,
-											}}
-										>
-											{stat.icon}
+										<div style={{ width: 48, height: 48, borderRadius: 12, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, color: s.color, flexShrink: 0 }}>
+											{s.icon}
 										</div>
 									</div>
 								</Card>
@@ -189,25 +169,65 @@ function InstructorHome() {
 						))}
 					</Row>
 
-					{resData?.topCourses?.length > 0 && (
-						<Card
-							title='Top Performing Courses'
-							style={{
-								marginTop: 24,
-								borderRadius: 12,
-								border: 'none',
-								boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-							}}
-						>
-							<Table
-								dataSource={resData?.topCourses || []}
-								columns={topCourseColumns}
-								rowKey='_id'
-								pagination={false}
-								size='small'
-							/>
-						</Card>
-					)}
+					{/* ── Engagement Row ── */}
+					<Row gutter={[20, 20]} style={{ marginTop: 20 }}>
+						<Col xs={24} md={10}>
+							<Card
+								title={<span style={{ fontWeight: 700 }}>Engagement Overview</span>}
+								style={{ borderRadius: 14, border: 'none', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', height: '100%' }}
+								styles={{ body: { padding: '16px 20px' } }}
+							>
+								{[
+									{
+										label: 'Avg Progress',
+										value: Math.round(d?.engagement?.averageProgress ?? 0),
+										color: '#1890ff',
+										icon: <ClockCircleOutlined />,
+									},
+									{
+										label: 'Completion Rate',
+										value: Math.round(d?.engagement?.completionRate ?? 0),
+										color: '#52c41a',
+										icon: <CheckCircleOutlined />,
+									},
+								].map((item) => (
+									<div key={item.label} style={{ marginBottom: 18 }}>
+										<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+											<Space>
+												<span style={{ color: item.color }}>{item.icon}</span>
+												<Text style={{ fontSize: 13 }}>{item.label}</Text>
+											</Space>
+											<Text style={{ fontWeight: 700, color: item.color }}>{item.value}%</Text>
+										</div>
+										<Progress
+											percent={item.value}
+											strokeColor={item.color}
+											showInfo={false}
+											size='small'
+											trailColor='#f0f0f0'
+										/>
+									</div>
+								))}
+							</Card>
+						</Col>
+
+						<Col xs={24} md={14}>
+							<Card
+								title={<span style={{ fontWeight: 700 }}>Course Performance</span>}
+								style={{ borderRadius: 14, border: 'none', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
+								styles={{ body: { padding: 0 } }}
+							>
+								<Table
+									dataSource={d?.coursePerformance || []}
+									columns={performanceCols}
+									rowKey='_id'
+									pagination={{ pageSize: 5, size: 'small', showSizeChanger: false }}
+									size='small'
+									scroll={{ x: 400 }}
+								/>
+							</Card>
+						</Col>
+					</Row>
 				</>
 			)}
 		</div>

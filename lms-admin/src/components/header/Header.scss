@@ -1,24 +1,30 @@
 .dashboard-header {
-	background: $bg-secondary;
-	box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+	background: #fff !important;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 24px;
-	border: 1px solid #f0f0f0;
-	background: $bg-primary !important;
+	padding: 0 20px !important;
+	border-bottom: 1px solid #f0f2f5;
+	height: 56px !important;
+	line-height: 56px !important;
+	position: sticky;
+	top: 0;
+	z-index: 100;
 
 	.header-right {
 		display: flex;
-		gap: 20px;
+		gap: 16px;
 		align-items: center;
+	}
 
-		svg {
-			transition: color 0.3s ease;
+	.user-info-text {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
 
-			&:hover {
-				color: red;
-			}
+		@media (max-width: 480px) {
+			display: none;
 		}
 	}
 }

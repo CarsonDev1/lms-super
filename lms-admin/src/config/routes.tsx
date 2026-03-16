@@ -13,6 +13,9 @@ import MySubmissions from '@/pages/instructor/MySubmissions';
 import Levels from '@/pages/levels/Levels';
 import Revenue from '@/pages/revenue/Revenue';
 import Users from '@/pages/users/Users';
+import Orders from '@/pages/orders/Orders';
+import Enrollments from '@/pages/enrollments/Enrollments';
+import Reviews from '@/pages/reviews/Reviews';
 import { ReactNode } from 'react';
 
 interface AppRoute {
@@ -52,6 +55,24 @@ export const adminRoutes: AppRoute[] = [
 		path: '/users',
 		element: <Users />,
 		name: 'Users',
+		roles: ['admin'],
+	},
+	{
+		path: '/orders',
+		element: <Orders />,
+		name: 'Orders',
+		roles: ['admin'],
+	},
+	{
+		path: '/enrollments',
+		element: <Enrollments />,
+		name: 'Enrollments',
+		roles: ['admin'],
+	},
+	{
+		path: '/reviews',
+		element: <Reviews />,
+		name: 'Reviews',
 		roles: ['admin'],
 	},
 	{

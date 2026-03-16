@@ -956,6 +956,123 @@ export const getPendingCourses = async (req, res) => {
 	}
 };
 
+export const getAllOrders = async (req, res) => {
+	try {
+		const { page = 1, limit = 20, status, search } = req.query;
+		const skip = (page - 1) * limit;
+
+		const query = {};
+		if (status) query.paymentStatus = status;
+		if (search) query.transactionId = new RegExp(search, 'i');
+
+		const orders = await Order.find(query)
+			.sort({ createdAt: -1 })
+			.skip(skip)
+			.limit(parseInt(limit))
+			.populate('userId', 'name email avatar')
+			.populate('courseId', 'title thumbnail');
+
+		const total = await Order.countDocuments(query);
+
+		res.status(200).json({
+			success: true,
+			data: {
+				orders,
+				pagination: {
+					page: parseInt(page),
+					limit: parseInt(limit),
+					total,
+					pages: Math.ceil(total / limit),
+				},
+			},
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: 'Failed to fetch orders' });
+	}
+};
+
+export const getAllEnrollments = async (req, res) => {
+	try {
+		const { page = 1, limit = 20, search } = req.query;
+		const skip = (page - 1) * limit;
+
+		let enrollmentQuery = {};
+		if (search) {
+			const users = await User.find({ $or: [{ name: new RegExp(search, 'i') }, { email: new RegExp(search, 'i') }] }).select('_id');
+			enrollmentQuery.userId = { $in: users.map(u => u._id) };
+		}
+
+		const enrollments = await Enrollment.find(enrollmentQuery)
+			.sort({ createdAt: -1 })
+			.skip(skip)
+			.limit(parseInt(limit))
+			.populate('userId', 'name email avatar')
+			.populate('courseId', 'title thumbnail');
+
+		const total = await Enrollment.countDocuments(enrollmentQuery);
+
+		res.status(200).json({
+			success: true,
+			data: {
+				enrollments,
+				pagination: {
+					page: parseInt(page),
+					limit: parseInt(limit),
+					total,
+					pages: Math.ceil(total / limit),
+				},
+			},
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: 'Failed to fetch enrollments' });
+	}
+};
+
+export const getAllReviews = async (req, res) => {
+	try {
+		const { page = 1, limit = 20, rating } = req.query;
+		const skip = (page - 1) * limit;
+
+		const query = {};
+		if (rating) query.rating = parseInt(rating);
+
+		const reviews = await Review.find(query)
+			.sort({ createdAt: -1 })
+			.skip(skip)
+			.limit(parseInt(limit))
+			.populate('userId', 'name email avatar')
+			.populate('courseId', 'title thumbnail');
+
+		const total = await Review.countDocuments(query);
+
+		res.status(200).json({
+			success: true,
+			data: {
+				reviews,
+				pagination: {
+					page: parseInt(page),
+					limit: parseInt(limit),
+					total,
+					pages: Math.ceil(total / limit),
+				},
+			},
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: 'Failed to fetch reviews' });
+	}
+};
+
+export const deleteAdminReview = async (req, res) => {
+	try {
+		const { reviewId } = req.params;
+		const review = await Review.findByIdAndDelete(reviewId);
+		if (!review) return res.status(404).json({ success: false, message: 'Review not found' });
+		res.status(200).json({ success: true, message: 'Review deleted successfully' });
+	} catch (error) {
+		res.status(500).json({ success: false, message: 'Failed to delete review' });
+	}
+};
+
 export default {
 	getDashboardStats,
 	getAllUsers,
@@ -968,4 +1085,8 @@ export default {
 	getUserStatistics,
 	getRevenueReport,
 	getPendingCourses,
+	getAllOrders,
+	getAllEnrollments,
+	getAllReviews,
+	deleteAdminReview,
 };
