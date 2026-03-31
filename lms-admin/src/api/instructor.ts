@@ -10,15 +10,27 @@ export interface InstructorDashboard {
 	enrollments: {
 		total: number;
 		thisMonth: number;
+		active?: number;
 	};
 	revenue: {
 		total: number;
 		thisMonth: number;
+		totalRevenue?: number;
+		totalOrders?: number;
 	};
 	ratings?: {
 		average: number;
 		total: number;
 	};
+	reviews?: {
+		averageRating: number;
+		totalReviews: number;
+	};
+	engagement?: {
+		averageProgress: number;
+		completionRate: number;
+	};
+	coursePerformance?: any[];
 	recentEnrollments?: any[];
 	topCourses?: any[];
 }

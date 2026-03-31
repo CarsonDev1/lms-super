@@ -17,7 +17,13 @@ export interface Achievement {
 }
 
 export const gamificationApi = {
-	getAchievements: () => apiClient.get<Achievement[]>('/gamification/achievements'),
-	createAchievement: (data: Partial<Achievement>) => apiClient.post<Achievement>('/gamification/achievements', data),
+	getAchievements: (params?: { page?: number; limit?: number }) =>
+		apiClient.get<Achievement[]>('/gamification/achievements', { params }),
+	createAchievement: (data: Partial<Achievement>) =>
+		apiClient.post<Achievement>('/gamification/achievements', data),
+	updateAchievement: (id: string, data: Partial<Achievement>) =>
+		apiClient.put<Achievement>(`/gamification/achievements/${id}`, data),
+	deleteAchievement: (id: string) =>
+		apiClient.delete(`/gamification/achievements/${id}`),
 	getLeaderboard: () => apiClient.get<any>('/gamification/leaderboard'),
 };

@@ -1,4 +1,5 @@
 import AuditLog from '../models/AuditLog.js';
+import logger from '../config/logger.js';
 
 /**
  * Middleware to log audit events
@@ -36,7 +37,7 @@ export const auditLog = (action, category, resourceType) => {
 						status: res.statusCode >= 200 && res.statusCode < 300 ? 'success' : 'failure',
 					});
 				} catch (error) {
-					console.error('Audit log error:', error);
+					logger.error('Audit log error:', error);
 				}
 			});
 
@@ -62,7 +63,7 @@ export const auditChanges = (action, category, resourceType) => {
 				const Model = (await import(`../models/${modelName}.js`)).default;
 				originalData = await Model.findById(req.params.id).lean();
 			} catch (error) {
-				console.error('Error fetching original data:', error);
+				logger.error('Error fetching original data:', error);
 			}
 		}
 
@@ -101,7 +102,7 @@ export const auditChanges = (action, category, resourceType) => {
 						status: res.statusCode >= 200 && res.statusCode < 300 ? 'success' : 'failure',
 					});
 				} catch (error) {
-					console.error('Audit log error:', error);
+					logger.error('Audit log error:', error);
 				}
 			});
 

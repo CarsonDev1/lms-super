@@ -3,8 +3,16 @@ import Course from '../models/Course.js';
 import Order from '../models/Order.js';
 import Enrollment from '../models/Enrollment.js';
 import Review from '../models/Review.js';
+import Comment from '../models/Comment.js';
+import Notification from '../models/Notification.js';
+import Session from '../models/Session.js';
+import Cart from '../models/Cart.js';
+import Wishlist from '../models/Wishlist.js';
+import StudyPlan from '../models/StudyPlan.js';
+import UserProgress from '../models/UserProgress.js';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import logger from '../config/logger.js';
 
 /**
  * @swagger
@@ -361,7 +369,7 @@ export const createUser = async (req, res) => {
 			const emailService = new EmailService();
 			await emailService.sendWelcomeEmail(user.email, user.name);
 		} catch (emailError) {
-			console.error('Failed to send welcome email:', emailError);
+			logger.error('Failed to send welcome email:', emailError);
 		}
 
 		res.status(201).json({
@@ -377,7 +385,7 @@ export const createUser = async (req, res) => {
 			},
 		});
 	} catch (error) {
-		console.error('Admin createUser error:', error);
+		logger.error('Admin createUser error:', error);
 		res.status(500).json({
 			success: false,
 			message: 'Failed to create user',
@@ -470,7 +478,19 @@ export const deleteUser = async (req, res) => {
 			});
 		}
 
-		// TODO: Clean up related data (enrollments, orders, etc.)
+		// Clean up related data
+		await Promise.allSettled([
+			Enrollment.deleteMany({ userId }),
+			Order.updateMany({ userId }, { $set: { paymentStatus: 'cancelled' } }),
+			Review.deleteMany({ userId }),
+			Comment.deleteMany({ userId }),
+			Notification.deleteMany({ userId }),
+			Session.deleteMany({ userId }),
+			Cart.deleteMany({ userId }),
+			Wishlist.deleteMany({ userId }),
+			StudyPlan.deleteMany({ userId }),
+			UserProgress.deleteMany({ userId }),
+		]);
 
 		res.status(200).json({
 			success: true,
@@ -628,7 +648,7 @@ export const resetUserPassword = async (req, res) => {
 					text: `Hello ${user.name},\n\nYour password has been reset by an administrator.\n\nNew Password: ${passwordToSet}\n\nPlease login and change your password immediately.\n\nBest regards,\nLMS Team`,
 				});
 			} catch (emailError) {
-				console.error('Failed to send password reset email:', emailError);
+				logger.error('Failed to send password reset email:', emailError);
 			}
 		}
 

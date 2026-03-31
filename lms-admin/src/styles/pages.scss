@@ -1,0 +1,229 @@
+// ─── Common Page Styles ──────────────────────────────────────────────────────
+// Shared styles for all admin pages
+
+// Page wrapper
+.page-wrapper {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Stats Cards ─────────────────────────────────────────────────────────────
+.stat-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .ant-card-body {
+    padding: 20px 24px;
+  }
+}
+
+// ─── Data Tables ─────────────────────────────────────────────────────────────
+.admin-table {
+  .ant-table {
+    border-radius: $border-radius;
+    overflow: hidden;
+
+    .ant-table-thead > tr > th {
+      background: $header-table-bg;
+      border-bottom: 1.5px solid $border-table;
+      font-weight: 600;
+      font-size: 13px;
+      color: $text-primary;
+      padding: 12px 16px;
+    }
+
+    .ant-table-tbody > tr {
+      transition: background-color 0.15s ease;
+
+      > td {
+        padding: 12px 16px;
+        font-size: 13px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      &:hover > td {
+        background: #f8faff !important;
+      }
+
+      &:last-child > td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .ant-table-pagination {
+    padding: 16px;
+    margin: 0;
+  }
+}
+
+// ─── Page Header ─────────────────────────────────────────────────────────────
+.page-header-wrapper {
+  margin-bottom: 20px;
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+
+// ─── Form Modal ──────────────────────────────────────────────────────────────
+.form-modal {
+  .ant-modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-form-item-label > label {
+    font-weight: 500;
+    color: $text-primary;
+  }
+}
+
+// ─── Tags ────────────────────────────────────────────────────────────────────
+.status-tag {
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 11px;
+  padding: 2px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+// ─── Cards ───────────────────────────────────────────────────────────────────
+.dashboard-card {
+  border-radius: 14px;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .ant-card-head {
+    border-bottom: 1px solid #f5f5f5;
+    padding: 0 20px;
+    min-height: 48px;
+
+    .ant-card-head-title {
+      font-weight: 700;
+      font-size: 14px;
+    }
+  }
+}
+
+// ─── Drawer ──────────────────────────────────────────────────────────────────
+.detail-drawer {
+  .ant-drawer-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 24px;
+  }
+
+  .ant-drawer-body {
+    padding: 24px;
+  }
+
+  .ant-descriptions-bordered .ant-descriptions-item-label {
+    background: #fafafa;
+    font-weight: 500;
+  }
+}
+
+// ─── Revenue Page ────────────────────────────────────────────────────────────
+.revenue-page {
+  .revenue-stat-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+  }
+}
+
+// ─── Instructor Pages ────────────────────────────────────────────────────────
+.instructor-page {
+  .engagement-card {
+    .progress-item {
+      margin-bottom: 18px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+    }
+  }
+}
+
+// ─── Audit Logs ──────────────────────────────────────────────────────────────
+.audit-logs-page {
+  .monospace {
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+    font-size: 12px;
+  }
+}
+
+// ─── Empty State ─────────────────────────────────────────────────────────────
+.empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────────────
+@media (max-width: $breakpoint-md) {
+  .page-header-wrapper {
+    .actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .stat-card {
+    .ant-card-body {
+      padding: 16px;
+    }
+  }
+}

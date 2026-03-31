@@ -4,10 +4,10 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import User from '../models/User.js';
 import logger from './logger.js';
 
-console.log('=== PASSPORT CONFIG ===');
-console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'EXISTS' : 'MISSING');
-console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'EXISTS' : 'MISSING');
-console.log('=======================');
+logger.info('=== PASSPORT CONFIG ===');
+logger.info(`GOOGLE_CLIENT_ID: ${process.env.GOOGLE_CLIENT_ID ? 'EXISTS' : 'MISSING'}`);
+logger.info(`GOOGLE_CLIENT_SECRET: ${process.env.GOOGLE_CLIENT_SECRET ? 'EXISTS' : 'MISSING'}`);
+logger.info('=======================');
 
 // Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {

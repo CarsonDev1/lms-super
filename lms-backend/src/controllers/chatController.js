@@ -1,5 +1,6 @@
 import ChatMessage from '../models/ChatMessage.js';
 import User from '../models/User.js';
+import logger from '../config/logger.js';
 
 /**
  * @swagger
@@ -205,8 +206,20 @@ export const sendMessage = async (req, res) => {
 			.populate('senderId', 'name avatar')
 			.populate('receiverId', 'name avatar');
 
-		// TODO: Emit socket event to receiver
-		// io.to(receiverId.toString()).emit('new-message', populatedMessage);
+		// Emit socket event to receiver
+		try {
+			const { emitToRoom, emitNotification } = await import('../config/socket.js');
+			const roomId = ChatMessage.generateRoomId(senderId, receiverId);
+			emitToRoom(roomId, 'new-message', populatedMessage);
+			emitNotification(receiverId, {
+				type: 'new_message',
+				title: 'New Message',
+				message: `${req.user.name} sent you a message`,
+				data: { senderId, messageId: populatedMessage._id }
+			});
+		} catch (socketError) {
+			logger.warn('Socket emission failed for chat message:', socketError.message);
+		}
 
 		res.status(201).json({
 			success: true,

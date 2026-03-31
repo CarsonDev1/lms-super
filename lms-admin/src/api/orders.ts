@@ -19,4 +19,6 @@ export interface Order {
 export const ordersApi = {
 	getAllOrders: (params?: { page?: number; limit?: number; status?: string; search?: string }) =>
 		apiClient.get<any>('/admin/orders', { params }),
+	getOrderDetail: (id: string) =>
+		apiClient.get<Order>(`/admin/orders/${id}`),
 };

@@ -13,6 +13,6 @@ export interface Enrollment {
 }
 
 export const enrollmentsApi = {
-	getAllEnrollments: (params?: { page?: number; limit?: number; search?: string }) =>
+	getAllEnrollments: (params?: { page?: number; limit?: number; search?: string; status?: string }) =>
 		apiClient.get<any>('/admin/enrollments', { params }),
 };
