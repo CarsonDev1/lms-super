@@ -11,7 +11,9 @@ import InstructorHome from '@/pages/instructor/InstructorHome';
 import InstructorQuizzes from '@/pages/instructor/InstructorQuizzes';
 import MySubmissions from '@/pages/instructor/MySubmissions';
 import Levels from '@/pages/levels/Levels';
+import Quizzes from '@/pages/quizzes/Quizzes';
 import Revenue from '@/pages/revenue/Revenue';
+import Settings from '@/pages/settings/Settings';
 import Users from '@/pages/users/Users';
 import Orders from '@/pages/orders/Orders';
 import Enrollments from '@/pages/enrollments/Enrollments';
@@ -100,6 +102,12 @@ export const adminRoutes: AppRoute[] = [
 		roles: ['admin'],
 	},
 	{
+		path: '/quizzes',
+		element: <Quizzes />,
+		name: 'Quizzes',
+		roles: ['admin'],
+	},
+	{
 		path: '/revenue',
 		element: <Revenue />,
 		name: 'Revenue',
@@ -110,6 +118,12 @@ export const adminRoutes: AppRoute[] = [
 		element: <AuditLogs />,
 		name: 'Audit Logs',
 		roles: ['admin'],
+	},
+	{
+		path: '/settings',
+		element: <Settings />,
+		name: 'Settings',
+		roles: ['admin', 'instructor', 'reviewer'],
 	},
 ];
 

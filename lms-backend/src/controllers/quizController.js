@@ -58,7 +58,7 @@ export const createQuiz = async (req, res) => {
 			});
 		}
 
-		if (course.instructor.toString() !== req.user._id.toString()) {
+		if (req.user.role !== 'admin' && course.instructor.toString() !== req.user._id.toString()) {
 			return res.status(403).json({
 				success: false,
 				message: 'You are not authorized to create quiz for this course',
@@ -172,7 +172,7 @@ export const getQuizById = async (req, res) => {
 	try {
 		const { quizId } = req.params;
 
-		const quiz = await Quiz.findById(quizId).populate('courseId', 'title instructor');
+		const quiz = await Quiz.findById(quizId).populate('courseId', 'title instructor thumbnail');
 
 		if (!quiz) {
 			return res.status(404).json({
@@ -181,18 +181,26 @@ export const getQuizById = async (req, res) => {
 			});
 		}
 
-		// Check if user is enrolled
-		const enrollment = await Enrollment.findOne({
-			userId: req.user._id,
-			courseId: quiz.courseId._id,
-			status: 'active',
-		});
+		const isInstructor = req.user.role === 'instructor' || req.user.role === 'admin';
+		const isOwner = isInstructor && (
+			req.user.role === 'admin' ||
+			quiz.courseId?.instructor?.toString() === req.user._id.toString()
+		);
 
-		if (!enrollment) {
-			return res.status(403).json({
-				success: false,
-				message: 'You are not enrolled in this course',
+		// Non-owners need enrollment to access
+		if (!isOwner) {
+			const enrollment = await Enrollment.findOne({
+				userId: req.user._id,
+				courseId: quiz.courseId._id,
+				status: 'active',
 			});
+
+			if (!enrollment) {
+				return res.status(403).json({
+					success: false,
+					message: 'You are not enrolled in this course',
+				});
+			}
 		}
 
 		// Get user's attempts
@@ -253,7 +261,7 @@ export const updateQuiz = async (req, res) => {
 			});
 		}
 
-		if (quiz.courseId.instructor.toString() !== req.user._id.toString()) {
+		if (req.user.role !== 'admin' && quiz.courseId.instructor.toString() !== req.user._id.toString()) {
 			return res.status(403).json({
 				success: false,
 				message: 'You are not authorized to update this quiz',
@@ -308,7 +316,7 @@ export const deleteQuiz = async (req, res) => {
 			});
 		}
 
-		if (quiz.courseId.instructor.toString() !== req.user._id.toString()) {
+		if (req.user.role !== 'admin' && quiz.courseId.instructor.toString() !== req.user._id.toString()) {
 			return res.status(403).json({
 				success: false,
 				message: 'You are not authorized to delete this quiz',
@@ -588,6 +596,80 @@ export const getQuizAttempts = async (req, res) => {
 	}
 };
 
+/**
+ * @swagger
+ * /api/quizzes:
+ *   get:
+ *     summary: Get quizzes for the current instructor or all quizzes for admin
+ *     tags: [Quizzes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: courseId
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of quizzes
+ */
+export const getMyQuizzes = async (req, res) => {
+	try {
+		const { page = 1, limit = 10, courseId, search } = req.query;
+		const skip = (parseInt(page) - 1) * parseInt(limit);
+
+		const query = {};
+
+		if (search) {
+			query.title = new RegExp(search, 'i');
+		}
+
+		if (req.user.role === 'admin') {
+			// Admin sees all quizzes
+			if (courseId) query.courseId = courseId;
+		} else {
+			// Instructor sees only their own quizzes
+			const instructorCourses = await Course.find({ instructor: req.user._id }).select('_id');
+			const courseIds = instructorCourses.map((c) => c._id);
+			query.courseId = courseId ? courseId : { $in: courseIds };
+		}
+
+		const quizzes = await Quiz.find(query)
+			.populate('courseId', 'title thumbnail instructor')
+			.sort({ createdAt: -1 })
+			.skip(skip)
+			.limit(parseInt(limit));
+
+		const total = await Quiz.countDocuments(query);
+
+		res.status(200).json({
+			success: true,
+			data: {
+				quizzes,
+				pagination: {
+					page: parseInt(page),
+					limit: parseInt(limit),
+					total,
+					pages: Math.ceil(total / parseInt(limit)),
+				},
+			},
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: 'Failed to fetch quizzes',
+		});
+	}
+};
+
 export default {
 	createQuiz,
 	getCourseQuizzes,
@@ -597,4 +679,5 @@ export default {
 	submitQuiz,
 	getAttemptResults,
 	getQuizAttempts,
+	getMyQuizzes,
 };

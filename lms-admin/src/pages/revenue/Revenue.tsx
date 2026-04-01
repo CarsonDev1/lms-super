@@ -113,7 +113,7 @@ const Revenue = () => {
 			dataIndex: 'revenue',
 			key: 'revenue',
 			align: 'right',
-			render: (v: number) => <strong style={{ color: '#52c41a' }}>${v.toLocaleString()}</strong>,
+			render: (v: number) => <strong style={{ color: '#52c41a' }}>{v.toLocaleString('vi-VN')}₫</strong>,
 		},
 	];
 
@@ -150,7 +150,7 @@ const Revenue = () => {
 			dataIndex: 'revenue',
 			key: 'revenue',
 			align: 'right',
-			render: (v: number) => <strong style={{ color: '#52c41a' }}>${v.toLocaleString()}</strong>,
+			render: (v: number) => <strong style={{ color: '#52c41a' }}>{v.toLocaleString('vi-VN')}₫</strong>,
 		},
 	];
 
@@ -174,7 +174,7 @@ const Revenue = () => {
 			dataIndex: 'revenue',
 			key: 'revenue',
 			align: 'right',
-			render: (v: number) => <strong style={{ color: '#52c41a' }}>${v.toLocaleString()}</strong>,
+			render: (v: number) => <strong style={{ color: '#52c41a' }}>{v.toLocaleString('vi-VN')}₫</strong>,
 		},
 	];
 
@@ -208,7 +208,7 @@ const Revenue = () => {
 							<StatCard
 								icon={<DollarOutlined />}
 								title='Total Revenue'
-								value={`$${totalRevenue.toLocaleString()}`}
+								value={`${totalRevenue.toLocaleString('vi-VN')}₫`}
 								color='#52c41a'
 							/>
 						</Col>

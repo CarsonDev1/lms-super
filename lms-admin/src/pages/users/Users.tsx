@@ -11,19 +11,33 @@ import {
 	KeyOutlined,
 	LockOutlined,
 	PlusOutlined,
+	SearchOutlined,
+	SyncOutlined,
 	UnlockOutlined,
 	UserOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Input, Modal, Popconfirm, Space, Tooltip, message } from 'antd';
+import { Button, Form, Input, Modal, Popconfirm, Select, Space, Tag, Tooltip, message } from 'antd';
 import { TableColumnType } from 'antd';
 import { useState } from 'react';
+
+const roleColors: Record<string, string> = {
+	admin: 'red',
+	instructor: 'blue',
+	student: 'green',
+	reviewer: 'purple',
+	guest: 'default',
+};
 
 const Users = () => {
 	const [openEditModal, setOpenEditModal] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
+	const [searchInput, setSearchInput] = useState('');
+	const [search, setSearch] = useState('');
+	const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
+
 	const { data, pagination, loading, refetch, page, pageSize, setPage, setPageSize } = usePaginatedFetch<User>(
-		'users',
-		(params) => usersApi.getUsers(params),
+		`users-${search}-${roleFilter}`,
+		(params) => usersApi.getUsers({ ...params, search: search || undefined, role: roleFilter }),
 	);
 
 	const handleEditUser = (user: User) => {
@@ -149,9 +163,9 @@ const Users = () => {
 			title: 'Role',
 			dataIndex: 'role',
 			key: 'role',
-			width: 60,
+			width: 90,
 			align: 'center' as const,
-			render: (text: string) => <span>{text}</span>,
+			render: (text: string) => <Tag color={roleColors[text] || 'default'}>{text?.toUpperCase()}</Tag>,
 		},
 		{
 			title: 'Active',
@@ -241,17 +255,43 @@ const Users = () => {
 		},
 	];
 
+	const handleSearch = () => {
+		setSearch(searchInput);
+		setPage(1);
+	};
+
 	const pageActions = (
-		<div className='actions'>
-			<Button onClick={() => refetch()}>Refresh</Button>
-			<Button icon={<PlusOutlined />} type='primary' className='btn-primary' onClick={handleAddUser}>
+		<Space wrap>
+			<Input
+				placeholder='Search name or email...'
+				value={searchInput}
+				onChange={(e) => setSearchInput(e.target.value)}
+				onPressEnter={handleSearch}
+				style={{ width: 220 }}
+				suffix={<SearchOutlined style={{ color: '#aaa', cursor: 'pointer' }} onClick={handleSearch} />}
+			/>
+			<Select
+				placeholder='All roles'
+				allowClear
+				style={{ width: 140 }}
+				value={roleFilter}
+				onChange={(val) => { setRoleFilter(val); setPage(1); }}
+				options={[
+					{ value: 'admin', label: 'Admin' },
+					{ value: 'instructor', label: 'Instructor' },
+					{ value: 'student', label: 'Student' },
+					{ value: 'reviewer', label: 'Reviewer' },
+				]}
+			/>
+			<Button icon={<SyncOutlined />} onClick={() => refetch()}>Refresh</Button>
+			<Button icon={<PlusOutlined />} type='primary' onClick={handleAddUser}>
 				Add User
 			</Button>
-		</div>
+		</Space>
 	);
 	return (
 		<div>
-			<PageHeader title='List user' total={pagination?.total} actions={pageActions} />
+			<PageHeader title='Users' total={pagination?.total} actions={pageActions} />
 
 			<DataTable
 				scroll={{ x: 1800 }}

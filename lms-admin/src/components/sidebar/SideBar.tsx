@@ -11,6 +11,7 @@ import {
 	NotificationOutlined,
 	OrderedListOutlined,
 	QuestionCircleOutlined,
+	SettingOutlined,
 	ShoppingOutlined,
 	StarOutlined,
 	TagsOutlined,
@@ -71,6 +72,7 @@ function SideBar({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
 				mk('/announcements', 'Announcements', <NotificationOutlined />),
 				mk('/cms', 'CMS Pages', <FileTextOutlined />),
 				mk('/achievements', 'Achievements', <TrophyOutlined />),
+				mk('/quizzes', 'Quizzes', <QuestionCircleOutlined />),
 			],
 		},
 		{
@@ -82,6 +84,8 @@ function SideBar({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
 				mk('/audit-logs', 'Audit Logs', <AuditOutlined />),
 			],
 		},
+		{ type: 'divider' as const },
+		mk('/settings', 'Settings', <SettingOutlined />),
 	];
 
 	const instructorMenu: MenuItem[] = [
@@ -104,12 +108,16 @@ function SideBar({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
 				mk('/instructor/submissions', 'My Submissions', <FileSearchOutlined />),
 			],
 		},
+		{ type: 'divider' as const },
+		mk('/settings', 'Settings', <SettingOutlined />),
 	];
 
 	const reviewerMenu: MenuItem[] = [
 		mk('/', 'Dashboard', <DashboardOutlined />),
 		{ type: 'divider' as const },
 		mk('/courses', 'Course Approvals', <BookOutlined />),
+		{ type: 'divider' as const },
+		mk('/settings', 'Settings', <SettingOutlined />),
 	];
 
 	const menuItems =

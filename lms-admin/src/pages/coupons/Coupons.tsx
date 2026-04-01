@@ -117,7 +117,7 @@ const Coupons = () => {
 			width: 100,
 			align: 'right',
 			render: (_: any, record: Coupon) =>
-				record.type === 'percentage' ? `${record.value}%` : `$${record.value?.toLocaleString()}`,
+				record.type === 'percentage' ? `${record.value}%` : `${record.value?.toLocaleString('vi-VN')}₫`,
 		},
 		{
 			title: 'Uses',
@@ -229,7 +229,7 @@ const Coupons = () => {
 					<Form.Item name='type' label='Discount Type' rules={[{ required: true }]}>
 						<Select>
 							<Select.Option value='percentage'>Percentage (%)</Select.Option>
-							<Select.Option value='fixed'>Fixed Amount ($)</Select.Option>
+							<Select.Option value='fixed'>Fixed Amount (₫)</Select.Option>
 						</Select>
 					</Form.Item>
 					<Form.Item
@@ -259,7 +259,7 @@ const Coupons = () => {
 					<Form.Item name='maxUsesPerUser' label='Max Uses Per User' initialValue={1}>
 						<InputNumber min={1} style={{ width: '100%' }} />
 					</Form.Item>
-					<Form.Item name='minimumPurchase' label='Minimum Purchase ($)'>
+					<Form.Item name='minimumPurchase' label='Minimum Purchase (₫)'>
 						<InputNumber min={0} style={{ width: '100%' }} />
 					</Form.Item>
 					<Form.Item name='isActive' label='Active' valuePropName='checked' initialValue={true}>

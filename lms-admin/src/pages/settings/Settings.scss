@@ -1,0 +1,26 @@
+.settings-page {
+	.ant-card {
+		transition: box-shadow 0.2s;
+
+		&:hover {
+			box-shadow: 0 6px 32px rgba(0, 0, 0, 0.09) !important;
+		}
+	}
+
+	.ant-form-item-label > label {
+		font-weight: 500;
+		color: #374151;
+	}
+
+	.ant-input,
+	.ant-input-password,
+	.ant-input-affix-wrapper {
+		border-radius: 8px;
+	}
+
+	.ant-btn {
+		border-radius: 8px;
+		height: 38px;
+		font-weight: 500;
+	}
+}

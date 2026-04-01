@@ -8,6 +8,7 @@ import {
 	submitQuiz,
 	getAttemptResults,
 	getQuizAttempts,
+	getMyQuizzes,
 } from '../controllers/quizController.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
 
@@ -16,11 +17,14 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticate);
 
+// Instructor / Admin: list quizzes (must be before /:quizId)
+router.get('/', authorize('instructor', 'admin'), getMyQuizzes);
+
 // Student routes
 router.get('/course/:courseId', getCourseQuizzes);
+router.get('/attempts/:attemptId', getAttemptResults);
 router.get('/:quizId', getQuizById);
 router.post('/:quizId/submit', submitQuiz);
-router.get('/attempts/:attemptId', getAttemptResults);
 router.get('/:quizId/attempts', getQuizAttempts);
 
 // Instructor routes

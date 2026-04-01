@@ -1,4 +1,6 @@
 import * as authService from '../services/authService.js';
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
 import logger from '../config/logger.js';
 
 const REFRESH_TOKEN_EXPIRATION = 14 * 24 * 60 * 60 * 1000; // 14 days
@@ -455,6 +457,135 @@ export const facebookCallback = async (req, res) => {
 	}
 };
 
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Change password for authenticated user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       400:
+ *         description: Incorrect current password
+ */
+export const changePassword = async (req, res) => {
+	try {
+		const { currentPassword, newPassword } = req.body;
+
+		if (!currentPassword || !newPassword) {
+			return res.status(400).json({
+				success: false,
+				message: 'Current password and new password are required',
+			});
+		}
+
+		if (newPassword.length < 6) {
+			return res.status(400).json({
+				success: false,
+				message: 'New password must be at least 6 characters',
+			});
+		}
+
+		const user = await User.findById(req.user._id).select('+password');
+		if (!user) {
+			return res.status(404).json({ success: false, message: 'User not found' });
+		}
+
+		const isMatch = await bcrypt.compare(currentPassword, user.password);
+		if (!isMatch) {
+			return res.status(400).json({
+				success: false,
+				message: 'Current password is incorrect',
+			});
+		}
+
+		user.password = newPassword; // pre-save hook will hash it
+		await user.save();
+
+		res.status(200).json({
+			success: true,
+			message: 'Password changed successfully',
+		});
+	} catch (error) {
+		logger.error('Change password error:', error);
+		res.status(500).json({ success: false, message: 'Failed to change password' });
+	}
+};
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   put:
+ *     summary: Update own profile (name, phone, bio, avatar)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               bio:
+ *                 type: string
+ *               avatar:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ */
+export const updateProfile = async (req, res) => {
+	try {
+		const { name, phone, bio, avatar } = req.body;
+
+		const allowedFields = {};
+		if (name) allowedFields.name = name;
+		if (phone !== undefined) allowedFields.phone = phone;
+		if (bio !== undefined) allowedFields.bio = bio;
+		if (avatar) allowedFields.avatar = avatar;
+
+		const user = await User.findByIdAndUpdate(req.user._id, allowedFields, {
+			new: true,
+			runValidators: true,
+		}).select('-password');
+
+		if (!user) {
+			return res.status(404).json({ success: false, message: 'User not found' });
+		}
+
+		res.status(200).json({
+			success: true,
+			message: 'Profile updated successfully',
+			data: user,
+		});
+	} catch (error) {
+		logger.error('Update profile error:', error);
+		res.status(500).json({ success: false, message: 'Failed to update profile' });
+	}
+};
+
 export default {
 	register,
 	login,
@@ -466,4 +597,6 @@ export default {
 	deleteSession,
 	googleCallback,
 	facebookCallback,
+	changePassword,
+	updateProfile,
 };

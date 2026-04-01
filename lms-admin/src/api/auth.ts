@@ -23,5 +23,5 @@ export const authApi = {
 	login: (data: LoginRequest) => post<LoginResponse>('/auth/login', data),
 	refreshToken: () => post<{ data: { accessToken: string } }>('/auth/refresh'),
 	logout: () => post('/auth/logout'),
-	getProfile: () => get<User>('/auth/profile'),
+	getProfile: () => get<User>('/auth/me'),
 };

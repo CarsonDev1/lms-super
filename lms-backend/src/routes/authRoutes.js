@@ -11,6 +11,8 @@ import {
 	deleteSession,
 	googleCallback,
 	facebookCallback,
+	changePassword,
+	updateProfile,
 } from '../controllers/authController.js';
 import { authenticate } from '../middlewares/auth.js';
 import validate from '../middlewares/validate.js';
@@ -47,6 +49,8 @@ router.get(
 
 // Protected routes
 router.get('/me', authenticate, getMe);
+router.put('/profile', authenticate, updateProfile);
+router.post('/change-password', authenticate, changePassword);
 router.post('/logout', authenticate, logout);
 router.post('/logout-all', authenticate, logoutAll);
 router.get('/sessions', authenticate, getSessions);
